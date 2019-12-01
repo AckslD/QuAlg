@@ -8,4 +8,4 @@ def assert_list_or_tuple(var):
 
 def assert_str(var):
     if not isinstance(var, str):
-        raise TypeError(f"variable should be a list or a tuple, not a {type(var)}")
+        raise TypeError(f"variable should be a str, not a {type(var)}")

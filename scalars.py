@@ -105,31 +105,35 @@ class DeltaFunction(Scalar):
     def __init__(self, var1, var2):
         assert_str(var1)
         assert_str(var2)
-        self._vars = {var1, var2}
+        self._vars = [var1, var2]
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return self._vars == other._vars
+        return set(self._vars) == set(other._vars)
 
     def conjugate(self):
-        return DeltaFunction(*list(self._vars))
+        return DeltaFunction(*self._vars)
 
     def __str__(self):
-        v1, v2 = list(self._vars)
+        v1, v2 = self._vars
         return f"D[{v1}-{v2}]"
 
     def __repr__(self):
-        v1, v2 = list(self._vars)
+        v1, v2 = self._vars
         return f"{self.__class__.__name__}({v1}, {v2})"
 
     def replace_var(self, old_variable, new_variable):
         if old_variable in self._vars:
-            self._vars = (self._vars - set([old_variable])) + set([new_variable])
+            self._vars.remove(old_variable)
+            self._vars.append(new_variable)
 
 
 class ProductOfScalars(Scalar):
-    def __init__(self, scalars):
+    def __init__(self, scalars=None):
+        self._factors = []
+        if scalars is None:
+            return
         assert_list_or_tuple(scalars)
         self._factors = []
         for scalar in scalars:
@@ -175,9 +179,11 @@ class ProductOfScalars(Scalar):
 
 
 class SumOfScalars(Scalar):
-    def __init__(self, scalars):
-        assert_list_or_tuple(scalars)
+    def __init__(self, scalars=None):
         self._terms = []
+        if scalars is None:
+            return
+        assert_list_or_tuple(scalars)
         for scalar in scalars:
             if not is_scalar(scalar):
                 raise TypeError("entries of scalars should be of type int, float, complex or Scalar, "
@@ -288,6 +294,7 @@ def test_integrate2():
     print(integrate(expr, "x"))
 
 
-# test_sum_of_scalars()
-# test_integrate()
-test_integrate2()
+if __name__ == '__main__':
+    # test_sum_of_scalars()
+    # test_integrate()
+    test_integrate2()
