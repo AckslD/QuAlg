@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from scalars import Scalar, is_scalar
 from states import BaseState, State
-from toolbox import assert_list_or_tuple
+from toolbox import assert_list_or_tuple, simplify
 
 
 class BaseOperator:
@@ -32,6 +32,12 @@ class BaseOperator:
             new_state._terms[self._left] += self._right.inner_product(base_state) * scalar
 
         return new_state
+
+    def __str__(self):
+        return f"Op[{self._left}{self._right._bra_str()}]"
+
+    def __repr__(self):
+        return f"{self._class__.__name__}({repr(self._left)}, {repr(self._right)})"
 
     def _mul_compatible(self, other):
         """Used to check if an operator or state is compatible for multiplication.
@@ -65,7 +71,11 @@ class BaseOperator:
 
 
 class Operator:
-    def __init__(self, base_ops, scalars=None):
+    def __init__(self, base_ops=None, scalars=None):
+        # NOTE assuming that all scalars can add int()
+        self._terms = defaultdict(int)
+        if base_ops is None:
+            return
         assert_list_or_tuple(base_ops)
         if scalars is None:
             scalars = [1] * len(base_ops)
@@ -75,8 +85,6 @@ class Operator:
                 raise ValueError(f"number of base operators ({len(base_ops)})"
                                  f"and scalars ({len(scalars)}) are not equal")
 
-        # NOTE assuming that all scalars can add int()
-        self._terms = defaultdict(int)
         for op_term, scalar in zip(base_ops, scalars):
             if not isinstance(op_term, BaseOperator):
                 raise TypeError(f"elements of base_ops should be instances of BaseOperator, not {type(op_term)}")
@@ -131,7 +139,7 @@ class Operator:
                 new_op._terms[base_op] += scalar
 
         # Check for zero terms
-        new_op._prune_zero_states()
+        new_op._prune_zero_terms()
 
         return new_op
 
@@ -155,7 +163,16 @@ class Operator:
     def dagger(self):
         raise NotImplementedError()
 
-    def _prune_zero_states(self):
+    def simplify(self):
+        new_op = Operator()
+        for base_op, scalar in self._terms.items():
+            new_op._terms[base_op] = simplify(scalar)
+
+        new_op._prune_zero_terms()
+
+        return new_op
+
+    def _prune_zero_terms(self):
         to_remove = []
         for base_op, scalar in list(self._terms.items()):
             if scalar == 0:

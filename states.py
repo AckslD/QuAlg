@@ -2,7 +2,7 @@ import abc
 from collections import defaultdict
 
 from scalars import ComplexScalar, is_scalar
-from toolbox import assert_list_or_tuple
+from toolbox import assert_list_or_tuple, simplify
 
 
 class BaseState(abc.ABC):
@@ -24,6 +24,14 @@ class BaseState(abc.ABC):
 
         For example if they have the same number of qubits.
         """
+        pass
+
+    def to_state(self):
+        """Converts the base state to a state with a single term."""
+        return State([self])
+
+    @abc.abstractmethod
+    def _bra_str(self):
         pass
 
 
@@ -65,10 +73,6 @@ class BaseQubitState(BaseState):
 
     def _bra_str(self):
         return f"<{self._binary}|"
-
-    def to_state(self):
-        """Converts the base state to a state with a single term."""
-        return State([self])
 
     def _assert_class(self, other):
         if not isinstance(other, self.__class__):
@@ -118,7 +122,7 @@ class State:
                 new_state._terms[base_state] += scalar
 
         # Check if there are any zero terms
-        new_state._prune_zero_states()
+        new_state._prune_zero_terms()
 
         return new_state
 
@@ -169,6 +173,15 @@ class State:
 
         return inner
 
+    def simplify(self):
+        new_state = State()
+        for base_state, scalar in self._terms.items():
+            new_state._terms[base_state] = simplify(scalar)
+
+        new_state._prune_zero_terms()
+
+        return new_state
+
     def _compatible(self, other):
         if not isinstance(other, State):
             return False
@@ -180,7 +193,7 @@ class State:
         other_term = next(iter(other._terms.keys()))
         return self_term._compatible(other_term)
 
-    def _prune_zero_states(self):
+    def _prune_zero_terms(self):
         to_remove = []
         for base_state, scalar in list(self._terms.items()):
             if scalar == 0:

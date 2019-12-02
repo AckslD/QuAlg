@@ -1,7 +1,8 @@
 import abc
 import operator
+from itertools import product
 
-from toolbox import assert_list_or_tuple, assert_str
+from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero
 
 
 class Scalar(abc.ABC):
@@ -11,12 +12,14 @@ class Scalar(abc.ABC):
 
     def __add__(self, other):
         # TODO can be smarter if self or other is SumOfScalars
-        assert_is_scalar(other)
+        if not is_scalar(other):
+            return NotImplemented
         return SumOfScalars([self, other])
 
     def __mul__(self, other):
         # TODO can be smarter if self or other is ProductOfScalars
-        assert_is_scalar(other)
+        if not is_scalar(other):
+            return NotImplemented
         return ProductOfScalars([self, other])
 
     def __rmul__(self, other):
@@ -100,6 +103,9 @@ class SingleVarFunctionScalar(Scalar):
         if self._variable == old_variable:
             self._variable = new_variable
 
+    def is_zero(self):
+        return False
+
 
 class DeltaFunction(Scalar):
     def __init__(self, var1, var2):
@@ -128,6 +134,9 @@ class DeltaFunction(Scalar):
             self._vars.remove(old_variable)
             self._vars.append(new_variable)
 
+    def is_zero(self):
+        return False
+
 
 class ProductOfScalars(Scalar):
     def __init__(self, scalars=None):
@@ -146,14 +155,19 @@ class ProductOfScalars(Scalar):
     def __str__(self):
         to_print = ""
         for scalar in self._factors:
-            to_print += f"({scalar})*"
+            factor = f"{scalar}"
+            # Add brackets if scalar is a SumOfScalars
+            if isinstance(scalar, SumOfScalars):
+                factor = f"({factor})"
+            to_print += f"{factor}*"
         return to_print[:-1]
 
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(self._factors)})"
 
     def __mul__(self, other):
-        assert_is_scalar(other)
+        if not is_scalar(other):
+            return NotImplemented
         if isinstance(other, ProductOfScalars):
             other_scalars = other._factors
         else:
@@ -177,6 +191,24 @@ class ProductOfScalars(Scalar):
             if is_scalar_with_variable(s):
                 s.replace_var(old_variable, new_variable)
 
+    def expand(self):
+        expandable_factors = []
+        for s in self._factors:
+            if isinstance(s, SumOfScalars):
+                expandable_factors.append(s._terms)
+            else:
+                expandable_factors.append([s])
+
+        # Expand the product
+        return SumOfScalars([ProductOfScalars(term) for term in product(*expandable_factors)])
+
+    def is_zero(self):
+        return any(is_zero(s) for s in self._factors)
+
+    def simplify(self):
+        new_scalar = self.expand()
+        return simplify(new_scalar)
+
 
 class SumOfScalars(Scalar):
     def __init__(self, scalars=None):
@@ -191,7 +223,7 @@ class SumOfScalars(Scalar):
             self._terms.append(scalar)
 
     def __eq__(self, other):
-        raise NotImplementedError()
+        return NotImplemented
 
     def __str__(self):
         to_print = ""
@@ -203,7 +235,8 @@ class SumOfScalars(Scalar):
         return f"{self.__class__.__name__}({repr(self._terms)})"
 
     def __add__(self, other):
-        assert_is_scalar(other)
+        if not is_scalar(other):
+            return NotImplemented
         if isinstance(other, SumOfScalars):
             other_scalars = other._terms
         else:
@@ -226,6 +259,16 @@ class SumOfScalars(Scalar):
         for s in self._terms:
             if is_scalar_with_variable(s):
                 s.replace_var(old_variable, new_variable)
+
+    def is_zero(self):
+        return all(s for s in self._factors)
+
+    def expand(self):
+        return sum((expand(term) for term in self._terms), SumOfScalars())
+
+    def simplify(self):
+        new_scalar = self.expand()
+        return SumOfScalars([term for term in new_scalar._terms if not is_zero(term)])
 
 
 def is_scalar_with_variable(scalar):
@@ -294,7 +337,29 @@ def test_integrate2():
     print(integrate(expr, "x"))
 
 
+def test_expand():
+    a = SingleVarFunctionScalar('a', 'x')
+    b = SingleVarFunctionScalar('b', 'x')
+    c = SingleVarFunctionScalar('c', 'x')
+    d = SingleVarFunctionScalar('d', 'x')
+
+    expr = (a + b) * (c + d)
+    print(expr.expand())
+
+
+def test_simplify():
+    a = SingleVarFunctionScalar('a', 'x')
+    b = SingleVarFunctionScalar('b', 'x')
+    c = SingleVarFunctionScalar('c', 'x')
+    zero = ComplexScalar(0)
+
+    expr = (a + b) * (c + zero)
+    print(expr.simplify())
+
+
 if __name__ == '__main__':
     # test_sum_of_scalars()
     # test_integrate()
-    test_integrate2()
+    # test_integrate2()
+    # test_expand()
+    test_simplify()

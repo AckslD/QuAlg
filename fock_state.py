@@ -13,15 +13,16 @@ class FockOp:
         self._variable = variable
         self._creation = creation
 
+    def _key(self):
+        return self._mode, self._variable, self._creation
+
     def __eq__(self, other):
         if not isinstance(other, FockOp):
             return NotImplemented
-        return (self._mode == other._mode
-                and self._variable == other._variable
-                and self._creation == other._creation)
+        return self._key() == other._key()
 
     def __hash__(self):
-        return hash((self._mode, self._variable, self._creation))
+        return hash(self._key())
 
     def __str__(self):
         dag = "+" if self._creation else ""
@@ -66,6 +67,17 @@ class FockOpProduct:
             to_print += f"{fock_op}^{count} * "
         return to_print[:-3]
 
+    def _key(self):
+        return tuple(sorted(self._fock_ops.items(), key=lambda x: x[0]._key()))
+
+    def __hash__(self):
+        return hash(self._key())
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self._key() == other._key()
+
     def dagger(self):
         new_op = FockOpProduct()
         for fock_op, count in self._fock_ops.items():
@@ -93,17 +105,28 @@ class FockOpProduct:
 
 
 class BaseFockState(BaseState):
-    def __init__(self, fock_ops):
+    def __init__(self, fock_ops=None):
         if isinstance(fock_ops, FockOpProduct):
             self._fock_op_product = fock_ops
         else:
             self._fock_op_product = FockOpProduct(fock_ops)
 
+    def _key(self):
+        return self._fock_op_product._key()
+
     def __eq__(self, other):
-        raise NotImplementedError()
+        if not isinstance(other, self.__class__):
+            return False
+        return self._key() == other._key()
 
     def __hash__(self):
-        raise NotImplementedError()
+        return hash(self._key())
+
+    def __str__(self):
+        to_print = ""
+        for fock_op, count in self._fock_op_product._fock_ops.items():
+            to_print += f"{fock_op}^{count}"
+        return to_print + "|0>"
 
     def inner_product(self, other):
         if not isinstance(other, self.__class__):
@@ -124,6 +147,12 @@ class BaseFockState(BaseState):
         if not isinstance(other, BaseFockState):
             return False
         return True
+
+    def _bra_str(self):
+        to_print = ""
+        for fock_op, count in self._fock_op_product._fock_ops.items():
+            to_print += f"{fock_op.dagger()}^{count}"
+        return "<0|" + to_print
 
 
 def assert_fock_op(op):
