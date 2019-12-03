@@ -1,7 +1,7 @@
 from copy import copy
 from collections import namedtuple
 
-from toolbox import assert_str, replace_var
+from toolbox import assert_str, replace_var, simplify
 from scalars import is_number, DeltaFunction, SumOfScalars, ProductOfScalars, InnerProductFunction,\
     SingleVarFunctionScalar, Scalar, assert_is_scalar
 
@@ -47,19 +47,22 @@ class _Integration(Scalar):
                 return new_scalar
         return new_scalar
 
-    def has_variable(self):
-        raise NotImplementedError()
+    def has_variable(self, variable):
+        # raise NotImplementedError()
+        if variable == self._variable:
+            return False
+        return self._scalar.has_variable(variable)
 
 
 def integrate(scalar, variable):
+    if isinstance(variable, list):
+        new_scalar = scalar
+        for v in variable:
+            new_scalar = integrate(new_scalar, v)
+        return new_scalar
     assert_str(variable)
     if isinstance(scalar, SumOfScalars):
-        # return
-        # results = []
-        # for s in scalar._terms:
-        #     result = integrate(s, variable)
-        # return [integrate(s, variable) for s in scalar._terms]
-        return sum(integrate(s, variable) for s in scalar._terms)
+        new_scalar = sum(integrate(s, variable) for s in scalar._terms)
     elif isinstance(scalar, ProductOfScalars):
         # Split factors based on if they contain the integration variable or not
         var_factors = []
@@ -69,30 +72,13 @@ def integrate(scalar, variable):
                 var_factors.append(factor)
             else:
                 other_factors.append(factor)
-        return ProductOfScalars(other_factors + [_Integration(ProductOfScalars(var_factors), variable)])
-        # for evaluate in EVALUATIONS:
-        #     result = evaluate(scalar, variable)
-        #     if result.applied:
-        #         return result
-        # return result
-        #     if out_scalar is not None:
-        #         return
-
-        # for facto
-        # var_factors = [factor for factor in scalar._factors if factor.has_variable(variable)]
-        # scalars, functions = scalar.split_scalars_and_functions()
-        # functions
-        # changed = True
-        # # import pdb
-        # # pdb.set_trace()
-        # while changed:
-        #     for evaluate in EVALUATIONS:
-        #         scalar, changed = evaluate(scalar, variable)
-        # return scalar
+        new_scalar = ProductOfScalars(other_factors + [_Integration(ProductOfScalars(var_factors), variable)])
     elif is_number(scalar):
-        return scalar
+        new_scalar = scalar
     else:
         raise NotImplementedError(f"integrate not implemented for type {type(scalar)}")
+
+    return simplify(new_scalar)
 
 
 def _evaluate_delta_function(integration_scalar):
@@ -118,8 +104,6 @@ def _evaluate_delta_function(integration_scalar):
 
 def _find_norm_identities(integration_scalar):
     """Finds integrals which are the norm of a function, i.e. 1"""
-    import pdb
-    pdb.set_trace()
     integrand = integration_scalar._scalar
     variable = integration_scalar._variable
     # TODO generalise this
@@ -138,6 +122,7 @@ def _find_function_inner_products(integration_scalar):
     if len(integrand) == 2:
         if all(isinstance(s, SingleVarFunctionScalar) for s in integrand):
             return InnerProductFunction(integrand[0]._func_name, integrand[1]._func_name)
+    return integration_scalar
 
 
 # These evaluations are used when integrating

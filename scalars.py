@@ -132,7 +132,7 @@ class InnerProductFunction(Scalar):
         return self._func_name1 == other._func_name1 and self._func_name2 == other._func_name2
 
     def __str__(self):
-        return "<{self._func_name1}|{self._func_name2}>"
+        return f"<{self._func_name1}|{self._func_name2}>"
 
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(self._func_name1)}, {repr(self._func_name2)})"
@@ -270,15 +270,20 @@ class ProductOfScalars(Scalar):
         return all(is_one(s) for s in self._factors)
 
     def simplify(self):
-        new_scalar = ProductOfScalars([simplify(term) for term in self._factors if not is_one(term)])
-        new_scalar = new_scalar.expand()
-        if isinstance(new_scalar, ProductOfScalars):
+        new_scalar = 1
+        for term in self._factors:
+            if not is_one(term):
+                new_scalar *= simplify(term)
+        new_scalar = expand(new_scalar)
+        if isinstance(new_scalar, SumOfScalars):
+            return simplify(new_scalar)
+
+        if _is_sequenced_scalar(new_scalar):
             if len(new_scalar) == 0:
                 return 0
-            elif len(new_scalar) == 1:
+            if len(new_scalar) == 1:
                 return simplify(new_scalar[0])
-            return new_scalar
-        return simplify(new_scalar)
+        return new_scalar
 
     def has_variable(self, variable):
         return any(factor.has_variable(variable) for factor in self)
@@ -332,7 +337,7 @@ class SumOfScalars(Scalar):
     def atoms(self):
         atoms = []
         for s in self._terms:
-            if any(isinstance(s, tp) for tp in [ProductOfScalars, SumOfScalars]):
+            if _is_sequenced_scalar(s):
                 atoms += s.atoms()
             else:
                 atoms.append(s)
@@ -348,17 +353,23 @@ class SumOfScalars(Scalar):
         return all(s for s in self._terms)
 
     def expand(self):
-        return sum((expand(term) for term in self._terms), SumOfScalars())
+        return sum((expand(term) for term in self._terms))
 
     def simplify(self):
-        new_scalar = self.expand()
-        new_scalar = SumOfScalars([simplify(term) for term in new_scalar._terms if not is_zero(term)])
-        if len(new_scalar) == 0:
-            return 0
-        elif len(new_scalar) == 1:
-            return simplify(new_scalar[0])
+        new_scalar = 0
+        for term in self.expand()._terms:
+            if not is_zero(term):
+                new_scalar += simplify(term)
+        if _is_sequenced_scalar(new_scalar):
+            if len(new_scalar) == 0:
+                return 0
+            if len(new_scalar) == 1:
+                return simplify(new_scalar[0])
         return new_scalar
 
+
+def _is_sequenced_scalar(scalar):
+    return any(isinstance(scalar, tp) for tp in [ProductOfScalars, SumOfScalars])
 
 
 def is_number(n):
