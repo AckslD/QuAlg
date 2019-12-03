@@ -1,3 +1,6 @@
+from copy import copy
+
+
 def is_list_or_tuple(var):
     return isinstance(var, list) or isinstance(var, tuple)
 
@@ -15,18 +18,28 @@ def assert_str(var):
 def simplify(obj):
     if hasattr(obj, "simplify"):
         return obj.simplify()
-    # TODO copy obj?
-    return obj
+    return copy(obj)
 
 
 def expand(obj):
     if hasattr(obj, "expand"):
         return obj.expand()
-    # TODO copy obj?
-    return obj
+    return copy(obj)
 
 
 def is_zero(obj):
     if hasattr(obj, "is_zero"):
         return obj.is_zero()
     return obj == 0
+
+
+def is_one(obj):
+    if hasattr(obj, "is_one"):
+        return obj.is_one()
+    return obj == 1
+
+
+def replace_var(obj, old_variable, new_variable):
+    if hasattr(obj, "replace_var"):
+        return obj.replace_var(old_variable, new_variable)
+    return copy(obj)

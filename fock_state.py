@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from scalars import ComplexScalar, DeltaFunction, ProductOfScalars
 from states import BaseState
-from toolbox import assert_str, assert_list_or_tuple
+from toolbox import assert_str, assert_list_or_tuple, replace_var
 
 
 class FockOp:
@@ -34,18 +34,25 @@ class FockOp:
     def dagger(self):
         return FockOp(self._mode, self._variable, not self._creation)
 
+    def replace_var(self, old_variable, new_variable):
+        var = self._variable
+        if old_variable == var:
+            var = new_variable
+        return self.__class__(self._mode, var, creation=self._creation)
+
 
 class FockOpProduct:
     def __init__(self, fock_ops=None):
         self._fock_ops = defaultdict(int)
-        if fock_ops is not None:
-            assert_list_or_tuple(fock_ops)
-            for fock_op in fock_ops:
-                assert_fock_op(fock_op)
-                # TODO we only allow these to be creation ops for now
-                if not fock_op._creation:
-                    raise NotImplementedError
-                self._fock_ops[fock_op] += 1
+        if fock_ops is None:
+            return
+        assert_list_or_tuple(fock_ops)
+        for fock_op in fock_ops:
+            assert_fock_op(fock_op)
+            # TODO we only allow these to be creation ops for now
+            if not fock_op._creation:
+                raise NotImplementedError
+            self._fock_ops[fock_op] += 1
 
     def __mul__(self, other):
         if isinstance(other, FockOp):
@@ -103,6 +110,12 @@ class FockOpProduct:
 
         return variables
 
+    def replace_var(self, old_variable, new_variable):
+        new_fock_op_product = FockOpProduct()
+        for fock_op, count in self._fock_ops.items():
+            new_fock_op_product._fock_ops[replace_var(fock_op, old_variable, new_variable)] = count
+        return new_fock_op_product
+
 
 class BaseFockState(BaseState):
     def __init__(self, fock_ops=None):
@@ -129,6 +142,7 @@ class BaseFockState(BaseState):
         return to_print + "|0>"
 
     def inner_product(self, other):
+        # TODO check this for more than one creation/annihilation operators
         if not isinstance(other, self.__class__):
             raise TypeError()
         l_vars_by_mode = self._fock_op_product.variables_by_modes()
@@ -142,6 +156,9 @@ class BaseFockState(BaseState):
                 scalar *= DeltaFunction(l_var, r_var)
 
         return scalar
+
+    def replace_var(self, old_variable, new_variable):
+        return self.__class__(replace_var(self._fock_op_product, old_variable, new_variable))
 
     def _compatible(self, other):
         if not isinstance(other, BaseFockState):

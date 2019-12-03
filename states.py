@@ -2,7 +2,7 @@ import abc
 from collections import defaultdict
 
 from scalars import ComplexScalar, is_scalar
-from toolbox import assert_list_or_tuple, simplify
+from toolbox import assert_list_or_tuple, simplify, replace_var
 
 
 class BaseState(abc.ABC):
@@ -80,7 +80,10 @@ class BaseQubitState(BaseState):
 
 
 class State:
-    def __init__(self, base_states, scalars=None):
+    def __init__(self, base_states=None, scalars=None):
+        if base_states is None:
+            self._terms = defaultdict(int)
+            return
         assert_list_or_tuple(base_states)
         if scalars is None:
             scalars = [1] * len(base_states)
@@ -179,6 +182,15 @@ class State:
             new_state._terms[base_state] = simplify(scalar)
 
         new_state._prune_zero_terms()
+
+        return new_state
+
+    def replace_var(self, old_variable, new_variable):
+        new_state = State()
+        for base_state, scalar in self._terms.items():
+            new_base_state = replace_var(base_state, old_variable, new_variable)
+            new_scalar = replace_var(scalar, old_variable, new_variable)
+            new_state._terms[new_base_state] = new_scalar
 
         return new_state
 

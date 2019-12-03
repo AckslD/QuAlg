@@ -2,7 +2,8 @@ import abc
 import operator
 from itertools import product
 
-from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero
+from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one
+# from integrate import integrate
 
 
 class Scalar(abc.ABC):
@@ -27,6 +28,9 @@ class Scalar(abc.ABC):
 
     def __radd__(self, other):
         return self + other
+
+    def has_variable(self, variable):
+        return False
 
     @abc.abstractmethod
     def conjugate(self):
@@ -100,10 +104,46 @@ class SingleVarFunctionScalar(Scalar):
         return SingleVarFunctionScalar(self._func_name, self._variable, not self._conjugate)
 
     def replace_var(self, old_variable, new_variable):
-        if self._variable == old_variable:
-            self._variable = new_variable
+        var = self._variable
+        if old_variable == var:
+            var = new_variable
+        return self.__class__(self._func_name, var, conjugate=self._conjugate)
 
     def is_zero(self):
+        return False
+
+    def is_one(self):
+        return False
+
+    def has_variable(self, variable):
+        return variable == self._variable
+
+
+class InnerProductFunction(Scalar):
+    def __init__(self, func_name1, func_name2):
+        assert_str(func_name1)
+        assert_str(func_name2)
+        self._func_name1 = func_name1
+        self._func_name2 = func_name2
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self._func_name1 == other._func_name1 and self._func_name2 == other._func_name2
+
+    def __str__(self):
+        return "<{self._func_name1}|{self._func_name2}>"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({repr(self._func_name1)}, {repr(self._func_name2)})"
+
+    def conjugate(self):
+        return self.__class__(self._func_name1, self._func_name2)
+
+    def is_zero(self):
+        return False
+
+    def is_one(self):
         return False
 
 
@@ -130,12 +170,20 @@ class DeltaFunction(Scalar):
         return f"{self.__class__.__name__}({v1}, {v2})"
 
     def replace_var(self, old_variable, new_variable):
-        if old_variable in self._vars:
-            self._vars.remove(old_variable)
-            self._vars.append(new_variable)
+        new_vars = list(self._vars)
+        if old_variable in new_vars:
+            new_vars.remove(old_variable)
+            new_vars.append(new_variable)
+        return self.__class__(*new_vars)
 
     def is_zero(self):
         return False
+
+    def is_one(self):
+        return False
+
+    def has_variable(self, variable):
+        return variable in self._vars
 
 
 class ProductOfScalars(Scalar):
@@ -174,6 +222,15 @@ class ProductOfScalars(Scalar):
             other_scalars = [other]
         return ProductOfScalars(self._factors + other_scalars)
 
+    def __len__(self):
+        return len(self._factors)
+
+    def __iter__(self):
+        return iter(self._factors)
+
+    def __getitem__(self, i):
+        return self._factors[i]
+
     def conjugate(self):
         return ProductOfScalars([scalar.conjugate() for scalar in self._factors])
 
@@ -187,11 +244,15 @@ class ProductOfScalars(Scalar):
         return atoms
 
     def replace_var(self, old_variable, new_variable):
+        new_factors = []
         for s in self._factors:
-            if is_scalar_with_variable(s):
-                s.replace_var(old_variable, new_variable)
+            new_factors.append(replace_var(s, old_variable, new_variable))
+        return self.__class__(new_factors)
 
     def expand(self):
+        if not any(isinstance(s, SumOfScalars) for s in self._factors):
+            # No factor is a sum
+            return ProductOfScalars(list(self._factors))
         expandable_factors = []
         for s in self._factors:
             if isinstance(s, SumOfScalars):
@@ -205,9 +266,22 @@ class ProductOfScalars(Scalar):
     def is_zero(self):
         return any(is_zero(s) for s in self._factors)
 
+    def is_one(self):
+        return all(is_one(s) for s in self._factors)
+
     def simplify(self):
-        new_scalar = self.expand()
+        new_scalar = ProductOfScalars([simplify(term) for term in self._factors if not is_one(term)])
+        new_scalar = new_scalar.expand()
+        if isinstance(new_scalar, ProductOfScalars):
+            if len(new_scalar) == 0:
+                return 0
+            elif len(new_scalar) == 1:
+                return simplify(new_scalar[0])
+            return new_scalar
         return simplify(new_scalar)
+
+    def has_variable(self, variable):
+        return any(factor.has_variable(variable) for factor in self)
 
 
 class SumOfScalars(Scalar):
@@ -243,6 +317,15 @@ class SumOfScalars(Scalar):
             other_scalars = [other]
         return SumOfScalars(self._terms + other_scalars)
 
+    def __len__(self):
+        return len(self._terms)
+
+    def __iter__(self):
+        return iter(self._terms)
+
+    def __getitem__(self, i):
+        return self._terms[i]
+
     def conjugate(self):
         return SumOfScalars([scalar.conjugate() for scalar in self._terms])
 
@@ -256,47 +339,26 @@ class SumOfScalars(Scalar):
         return atoms
 
     def replace_var(self, old_variable, new_variable):
+        new_terms = []
         for s in self._terms:
-            if is_scalar_with_variable(s):
-                s.replace_var(old_variable, new_variable)
+            new_terms.append(replace_var(s, old_variable, new_variable))
+        return self.__class__(new_terms)
 
     def is_zero(self):
-        return all(s for s in self._factors)
+        return all(s for s in self._terms)
 
     def expand(self):
         return sum((expand(term) for term in self._terms), SumOfScalars())
 
     def simplify(self):
         new_scalar = self.expand()
-        return SumOfScalars([term for term in new_scalar._terms if not is_zero(term)])
+        new_scalar = SumOfScalars([simplify(term) for term in new_scalar._terms if not is_zero(term)])
+        if len(new_scalar) == 0:
+            return 0
+        elif len(new_scalar) == 1:
+            return simplify(new_scalar[0])
+        return new_scalar
 
-
-def is_scalar_with_variable(scalar):
-    types = [
-        SingleVarFunctionScalar,
-        DeltaFunction,
-        SumOfScalars,
-        ProductOfScalars,
-    ]
-    return any(isinstance(scalar, tp) for tp in types)
-
-
-def integrate(scalar, variable):
-    assert_str(variable)
-    if isinstance(scalar, SumOfScalars):
-        return sum(integrate(s) for s in scalar._terms)
-    elif isinstance(scalar, ProductOfScalars):
-        # Check if has delta
-        for i, s in enumerate(scalar._factors):
-            # TODO add checks for consistency
-            if isinstance(s, DeltaFunction):
-                if variable in s._vars:
-                    other_var = list(s._vars - set([variable]))[0]
-                    new_scalars = scalar._factors[:i] + scalar._factors[i+1:]
-                    new_scalar = ProductOfScalars(new_scalars)
-                    for atom in new_scalar.atoms():
-                        atom.replace_var(old_variable=variable, new_variable=other_var)
-                    return new_scalar
 
 
 def is_number(n):

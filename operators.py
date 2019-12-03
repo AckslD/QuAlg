@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from scalars import Scalar, is_scalar
 from states import BaseState, State
-from toolbox import assert_list_or_tuple, simplify
+from toolbox import assert_list_or_tuple, simplify, replace_var
 
 
 class BaseOperator:
@@ -169,6 +169,15 @@ class Operator:
             new_op._terms[base_op] = simplify(scalar)
 
         new_op._prune_zero_terms()
+
+        return new_op
+
+    def replace_var(self, old_variable, new_variable):
+        new_op = Operator()
+        for base_op, scalar in self._terms.items():
+            new_base_op = replace_var(base_op, old_variable, new_variable)
+            new_scalar = replace_var(scalar, old_variable, new_variable)
+            new_op._terms[new_base_op] = new_scalar
 
         return new_op
 
