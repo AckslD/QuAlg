@@ -4,7 +4,7 @@ from scalars import SingleVarFunctionScalar
 from states import BaseQubitState
 from fock_state import BaseFockState, FockOp, FockOpProduct
 from operators import Operator, outer_product
-from toolbox import simplify, replace_var
+from toolbox import simplify, replace_var, get_variables
 from integrate import integrate
 
 from scalars import ProductOfScalars, InnerProductFunction
@@ -45,6 +45,44 @@ def construct_beam_splitter():
 
     return beam_splitter.simplify()
 
+def construct_projector(num_left, num_right):
+    vac = BaseFockState([]).to_state()
+    c1 = BaseFockState([FockOp('c', 'p1')]).to_state()
+    c2 = BaseFockState([FockOp('c', 'p2')]).to_state()
+    d1 = BaseFockState([FockOp('d', 'p1')]).to_state()
+    d2 = BaseFockState([FockOp('d', 'p2')]).to_state()
+
+    if (num_left, num_right) == (0, 0):
+        # P00
+        return outer_product(vac, vac)
+    elif (num_left, num_right) == (1, 0):
+        # P10
+        return outer_product(c1, c1)
+    elif (num_left, num_right) == (0, 1):
+        # P10
+        return outer_product(c1, c1)
+
+def example_projectors():
+    s0, sphi, spsi, sphipsi = get_fock_states()
+    
+    s = sphi
+    p = construct_projector(1, 0)
+    inner = (p * s).inner_product(s)
+    print(integrate(inner))
+
+
+def ultimate_example():
+    u = construct_beam_splitter()
+    p = construct_projector(1, 0)
+    m = u.dagger() * p * replace_var(u)
+    m = simplify(m)
+    # print(m)
+
+    s01 = BaseQubitState("10").to_state()
+    inner = (m * s01).inner_product(s01)
+    print(inner)
+    print(integrate(inner))
+
 
 def example_states():
     s0, sphi, spsi, sphipsi = get_fock_states()
@@ -68,8 +106,11 @@ def example_beam_splitter():
 
 
 def main():
-    example_states()
+    # example_states()
     # example_beam_splitter()
+    # construct_projector(0, 0)
+    # example_projectors()
+    ultimate_example()
 
 
 if __name__ == '__main__':

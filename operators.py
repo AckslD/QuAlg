@@ -134,7 +134,14 @@ class Operator:
         return new_op
 
     def _mul_operator(self, operator):
-        raise NotImplementedError()
+        new_op = Operator()
+        for self_base_op, self_scalar in self._terms.items():
+            for other_base_op, other_scalar in operator._terms.items():
+                new_base_op = BaseOperator(self_base_op._left, other_base_op._right)
+                new_scalar = self_base_op._right.inner_product(other_base_op._left) * self_scalar * other_scalar
+                new_op._terms[new_base_op] += new_scalar
+
+        return new_op
 
     def __add__(self, other):
         if not self._add_compatible(other):
@@ -174,7 +181,12 @@ class Operator:
         return self._terms[key]
 
     def dagger(self):
-        raise NotImplementedError()
+        new_op = Operator()
+        for base_op, scalar in self._terms.items():
+            new_base_op = BaseOperator(left=base_op._right, right=base_op._left)
+            new_scalar = scalar.conjugate()
+            new_op._terms[new_base_op] += new_scalar
+        return new_op
 
     def simplify(self):
         new_op = Operator()
