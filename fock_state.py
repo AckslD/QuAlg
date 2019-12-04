@@ -173,6 +173,12 @@ class BaseFockState(BaseState):
 
         return scalar
 
+    def tensor_product(self, other):
+        if not isinstance(other, self.__class__):
+            raise NotImplementedError(f"fock tensor product is not implemented for {type(other)}")
+        prod = self._fock_op_product * other._fock_op_product
+        return BaseFockState(fock_ops=prod)
+
     def replace_var(self, old_variable, new_variable):
         return self.__class__(replace_var(self._fock_op_product, old_variable, new_variable))
 

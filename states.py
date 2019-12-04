@@ -14,8 +14,15 @@ class BaseState(abc.ABC):
     def __hash__(self):
         pass
 
+    def __matmul__(self, other):
+        return self.tensor_product(other)
+
     @abc.abstractmethod
     def inner_product(self, other):
+        pass
+
+    @abc.abstractmethod
+    def tensor_product(self, other):
         pass
 
     @abc.abstractmethod
@@ -70,6 +77,10 @@ class BaseQubitState(BaseState):
             return ComplexScalar(1)
         else:
             return ComplexScalar(0)
+
+    def tensor_product(self, other):
+        self._assert_class(other)
+        return BaseQubitState(self._binary + other._binary)
 
     def _bra_str(self):
         return f"<{self._binary}|"
@@ -165,6 +176,10 @@ class State:
     def __len__(self):
         return len(self._terms)
 
+
+    def __matmul__(self, other):
+        return self.tensor_product(other)
+
     def __iter__(self):
         return iter(self._terms.items())
 
@@ -186,6 +201,17 @@ class State:
                 inner += (self_scalar.conjugate() * other_scalar) * self_base_state.inner_product(other_base_state)
 
         return inner
+
+    def tensor_product(self, other):
+        if not isinstance(other, self.__class__):
+            raise NotImplementedError(f"tensor product is not implemented for {type(other)}")
+        tensor = State()
+        for self_base_state, self_scalar in self._terms.items():
+            for other_base_state, other_scalar in other._terms.items():
+                tensor += State(base_states=[self_base_state.tensor_product(other_base_state)],
+                                scalars=[self_scalar * other_scalar])
+
+        return tensor
 
     def simplify(self):
         new_state = State()
