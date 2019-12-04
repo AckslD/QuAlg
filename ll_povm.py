@@ -7,6 +7,8 @@ from operators import Operator, outer_product
 from toolbox import simplify, replace_var
 from integrate import integrate
 
+from scalars import ProductOfScalars, InnerProductFunction
+
 
 def get_fock_states():
     bs0 = BaseFockState()
@@ -24,8 +26,10 @@ def get_fock_states():
     bscd = BaseFockState([FockOp("c", "w1"), FockOp("d", "w2")])
     bsdc = BaseFockState([FockOp("d", "w1"), FockOp("c", "w2")])
     bsdd = BaseFockState([FockOp("d", "w1"), FockOp("d", "w2")])
+    # bs = bscd
+    # print(simplify(bs.inner_product(replace_var(bs))))
     phipsi = SingleVarFunctionScalar("phi", "w1") * SingleVarFunctionScalar("psi", "w2")
-    sphipsi = phipsi * (bscc.to_state() + bsdc.to_state() + bscd.to_state() - bsdd.to_state())
+    sphipsi = (1 / 2) * phipsi * (bscc.to_state() + bsdc.to_state() - bscd.to_state() - bsdd.to_state())
 
     return s0, sphi, spsi, sphipsi
 
@@ -44,27 +48,18 @@ def construct_beam_splitter():
 
 def example_states():
     s0, sphi, spsi, sphipsi = get_fock_states()
-    print(f"State is: {sphi}\n")
-    inner = sphi.inner_product(replace_var(sphi, 'w1', 'v1'))
-    print(f"inner product is: {inner}\n")
-    print(f"after simplify: {simplify(inner)}\n")
-    inner = integrate(inner, ['w1', 'v1'])
-    print(f"after integrate: {inner}\n")
-    return
+    # print(f"State is: {sphi}\n")
+    # inner = sphi.inner_product(sphi)
+    # print(f"inner product is: {inner}\n")
+    # simplify(inner)
+    # print(f"after simplify: {simplify(inner)}\n")
+    # inner = integrate(inner)
+    # print(f"after integrate: {inner}\n")
+    # return
 
-
-    r = replace_var(replace_var(sphipsi, 'w1', 'v1'), 'w2', 'v2')
-    l = sphipsi
-
-    i = simplify(r.inner_product(l))
-    print(i)
-    # print()
-    # print(integrate(i, 'w1'))
-    # print()
-    # print(simplify(integrate(i, 'w1')))
-    # print()
-    # print(integrate(simplify(integrate(i, 'w1')), 'w2'))
-    print(integrate(i, ['w1', 'w2', 'v1', 'v2']))
+    inner = simplify(sphipsi.inner_product(sphipsi))
+    print(inner)
+    print(integrate(inner))
 
 
 def example_beam_splitter():

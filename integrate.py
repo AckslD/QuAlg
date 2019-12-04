@@ -1,7 +1,7 @@
 from copy import copy
 from collections import namedtuple
 
-from toolbox import assert_str, replace_var, simplify
+from toolbox import assert_str, replace_var, simplify, get_variables
 from scalars import is_number, DeltaFunction, SumOfScalars, ProductOfScalars, InnerProductFunction,\
     SingleVarFunctionScalar, Scalar, assert_is_scalar
 
@@ -26,6 +26,9 @@ class _Integration(Scalar):
             return False
         # TODO check with swapping the integration variable since this shouldn't matter
         return self._scalar == other._scalar and self._variable == other._variable
+
+    def __hash__(self):
+        return hash(self._key())
 
     def __str__(self):
         return f"S_{self._variable}{{{self._scalar}}}"
@@ -53,9 +56,16 @@ class _Integration(Scalar):
             return False
         return self._scalar.has_variable(variable)
 
+    def _key(self):
+        return (self._scalar, self._variable)
 
-def integrate(scalar, variable):
-    if isinstance(variable, list):
+
+def integrate(scalar, variable=None):
+    # TODO needed?
+    scalar = simplify(scalar)
+    if variable is None:
+        return integrate(scalar, get_variables(scalar))
+    if isinstance(variable, set):
         new_scalar = scalar
         for v in variable:
             new_scalar = integrate(new_scalar, v)
@@ -105,7 +115,6 @@ def _evaluate_delta_function(integration_scalar):
 def _find_norm_identities(integration_scalar):
     """Finds integrals which are the norm of a function, i.e. 1"""
     integrand = integration_scalar._scalar
-    variable = integration_scalar._variable
     # TODO generalise this
     if len(integrand) == 2:
         if all(isinstance(s, SingleVarFunctionScalar) for s in integrand):
@@ -117,7 +126,6 @@ def _find_norm_identities(integration_scalar):
 def _find_function_inner_products(integration_scalar):
     """Finds integrals which evaluate to the inner product of functions."""
     integrand = integration_scalar._scalar
-    variable = integration_scalar._variable
     # TODO generalise this
     if len(integrand) == 2:
         if all(isinstance(s, SingleVarFunctionScalar) for s in integrand):
@@ -131,3 +139,25 @@ EVALUATIONS = [
     _find_norm_identities,
     _find_function_inner_products,
 ]
+
+
+def test_integrate():
+    f1 = SingleVarFunctionScalar("f", "x")
+    f2 = SingleVarFunctionScalar("f", "y")
+    d = DeltaFunction("x", "y")
+    expr = f1 * f2.conjugate() * d
+    print(integrate(expr, "x"))
+
+
+def test_integrate2():
+    f1 = SingleVarFunctionScalar("f", "x")
+    f2 = SingleVarFunctionScalar("f", "y")
+    f3 = f1 * f2.conjugate()
+    d = DeltaFunction("x", "y")
+    expr = (f3 + f3) * d
+    print(integrate(expr, "x"))
+
+
+if __name__ == '__main__':
+    test_integrate()
+    # test_integrate2()

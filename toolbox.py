@@ -39,7 +39,20 @@ def is_one(obj):
     return obj == 1
 
 
-def replace_var(obj, old_variable, new_variable):
+def replace_var(obj, old_variable=None, new_variable=None):
     if hasattr(obj, "replace_var"):
+        if old_variable is None:
+            new_obj = copy(obj)
+            for old_variable in get_variables(obj):
+                new_obj = replace_var(new_obj, old_variable=old_variable)
+            return new_obj
+        if new_variable is None:
+            new_variable = old_variable + "'"
         return obj.replace_var(old_variable, new_variable)
     return copy(obj)
+
+
+def get_variables(obj):
+    if hasattr(obj, "get_variables"):
+        return obj.get_variables()
+    return set([])
