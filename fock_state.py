@@ -1,4 +1,5 @@
 from collections import defaultdict
+from itertools import permutations
 
 from scalars import ComplexScalar, DeltaFunction, ProductOfScalars
 from states import BaseState
@@ -39,6 +40,9 @@ class FockOp:
         if old_variable == var:
             var = new_variable
         return self.__class__(self._mode, var, creation=self._creation)
+
+    def get_variables(self):
+        return set([self._variable])
 
 
 class FockOpProduct:
@@ -116,6 +120,13 @@ class FockOpProduct:
             new_fock_op_product._fock_ops[replace_var(fock_op, old_variable, new_variable)] = count
         return new_fock_op_product
 
+    def get_variables(self):
+        vars = set([])
+        for fock_op in self._fock_ops:
+            vars |= fock_op.get_variables()
+
+        return vars
+
 
 class BaseFockState(BaseState):
     def __init__(self, fock_ops=None):
@@ -147,18 +158,26 @@ class BaseFockState(BaseState):
             raise TypeError()
         l_vars_by_mode = self._fock_op_product.variables_by_modes()
         r_vars_by_mode = other._fock_op_product.variables_by_modes()
-        scalar = ProductOfScalars()
+        scalar = 1
         for mode, l_vars in l_vars_by_mode.items():
             r_vars = r_vars_by_mode.get(mode, [])
             if len(l_vars) != len(r_vars):
                 return ComplexScalar(0)
-            for l_var, r_var in zip(l_vars, r_vars):
-                scalar *= DeltaFunction(l_var, r_var)
+            factor = 0
+            for perm_r_vars in permutations(r_vars):
+                term = 1
+                for l_var, r_var in zip(l_vars, perm_r_vars):
+                    term *= DeltaFunction(l_var, r_var)
+                factor += term
+            scalar *= factor
 
         return scalar
 
     def replace_var(self, old_variable, new_variable):
         return self.__class__(replace_var(self._fock_op_product, old_variable, new_variable))
+
+    def get_variables(self):
+        return self._fock_op_product.get_variables()
 
     def _compatible(self, other):
         if not isinstance(other, BaseFockState):
@@ -193,6 +212,17 @@ def test_inner_product():
     print(s1.inner_product(s2))
 
 
+def test_inner_product_multi_photon():
+    cw1 = FockOp('c', 'w1')
+    cw2 = FockOp('c', 'w2')
+    cw3 = FockOp('c', 'w3')
+    state = BaseFockState([cw1, cw2, cw3]).to_state()
+    print(state)
+    print()
+    print(state.inner_product(state))
+
+
 if __name__ == '__main__':
     # test_fock_op_product()
-    test_inner_product()
+    # test_inner_product()
+    test_inner_product_multi_photon()

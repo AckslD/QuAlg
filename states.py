@@ -2,7 +2,7 @@ import abc
 from collections import defaultdict
 
 from scalars import ComplexScalar, is_scalar
-from toolbox import assert_list_or_tuple, simplify, replace_var
+from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables
 
 
 class BaseState(abc.ABC):
@@ -77,6 +77,9 @@ class BaseQubitState(BaseState):
     def _assert_class(self, other):
         if not isinstance(other, self.__class__):
             raise TypeError(f"other is not of type {self.__class__}, but {type(other)}")
+
+    def get_variables(self):
+        return set([])
 
 
 class State:
@@ -162,13 +165,21 @@ class State:
     def __len__(self):
         return len(self._terms)
 
-    def inner_product(self, other):
+    def __iter__(self):
+        return iter(self._terms.items())
+
+    def __getitem__(self, key):
+        return self._terms[key]
+
+    def inner_product(self, other, first_replace_var=True):
         if not isinstance(other, self.__class__):
             raise NotImplementedError(f"inner product is not implemented for {type(other)}")
         if not self._compatible(other):
             raise ValueError(f"other ({other}) is not compatible with self ({self})")
         # NOTE if BaseState are assumed to be orthogonal be don't need to do the
         # product of base states.
+        if first_replace_var:
+            other = replace_var(other)
         inner = 0
         for self_base_state, self_scalar in self._terms.items():
             for other_base_state, other_scalar in other._terms.items():
@@ -193,6 +204,14 @@ class State:
             new_state._terms[new_base_state] = new_scalar
 
         return new_state
+
+    def get_variables(self):
+        vars = set([])
+        for term in self:
+            for part in term:
+                vars |= get_variables(part)
+
+        return vars
 
     def _compatible(self, other):
         if not isinstance(other, State):

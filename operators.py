@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from scalars import Scalar, is_scalar
 from states import BaseState, State
-from toolbox import assert_list_or_tuple, simplify, replace_var
+from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables
 
 
 class BaseOperator:
@@ -37,7 +37,7 @@ class BaseOperator:
         return f"Op[{self._left}{self._right._bra_str()}]"
 
     def __repr__(self):
-        return f"{self._class__.__name__}({repr(self._left)}, {repr(self._right)})"
+        return f"{self.__class__.__name__}({repr(self._left)}, {repr(self._right)})"
 
     def _mul_compatible(self, other):
         """Used to check if an operator or state is compatible for multiplication.
@@ -68,6 +68,13 @@ class BaseOperator:
     def _assert_class(self, other):
         if not isinstance(other, self.__class__):
             raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")
+
+    def get_variables(self):
+        vars = set([])
+        for bs in [self._left, self._right]:
+            vars |= bs.get_variables()
+
+        return vars
 
 
 class Operator:
@@ -160,6 +167,12 @@ class Operator:
         scalars = [self._terms[base_op] for base_op in base_ops]
         return f"{self.__class__.__name__}({repr(base_ops)}, {repr(scalars)})"
 
+    def __iter__(self):
+        return iter(self._terms.items())
+
+    def __getitem__(self, key):
+        return self._terms[key]
+
     def dagger(self):
         raise NotImplementedError()
 
@@ -180,6 +193,21 @@ class Operator:
             new_op._terms[new_base_op] = new_scalar
 
         return new_op
+
+    def get_variables(self):
+        vars = set([])
+        for term in self:
+            for part in term:
+                vars |= get_variables(part)
+
+        return vars
+
+    # TODO
+    # def expectation_value(self, state, first_replace_var=True):
+    #     if not isinstance(state, State):
+    #         raise TypeError(f"state needs to be a State, not {type(state)}")
+
+    #     return state.inner_product(self * right, first_replace_var=first_replace_var)
 
     def _prune_zero_terms(self):
         to_remove = []
