@@ -260,7 +260,7 @@ class ProductOfScalars(Scalar):
         return ProductOfScalars(self._factors + [other])
 
     def _start_index(self):
-        return 1 if self._factors[0] == 1 else 0
+        return 1 if (self._factors[0] == 1 and len(self._factors) > 1) else 0
 
     def __len__(self):
         start = self._start_index()
