@@ -1,7 +1,7 @@
 import numpy as np
 
 from states import BaseQubitState
-from operators import BaseOperator, Operator, outer_product
+from operators import outer_product
 
 
 def test_mul_state():

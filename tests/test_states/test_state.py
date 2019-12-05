@@ -6,23 +6,23 @@ from scalars import ComplexScalar
 
 
 @pytest.mark.parametrize("input, num_terms, error", [
-    # (BaseQubitState("0"), None, TypeError),
-    # ((ComplexScalar(1), BaseQubitState("0")), None, TypeError),
-    # ([(None, BaseQubitState("0"))], None, TypeError),
-    # ([(ComplexScalar(1), None)], None, TypeError),
+    (BaseQubitState("0"), None, TypeError),
+    ((ComplexScalar(1), BaseQubitState("0")), None, TypeError),
+    ([(None, BaseQubitState("0"))], None, TypeError),
+    ([(ComplexScalar(1), None)], None, TypeError),
     ([BaseQubitState("0")], 1, None),
-    # ([
-    #     (ComplexScalar(1), BaseQubitState("0")),
-    #     (ComplexScalar(1), BaseQubitState("1")),
-    # ], 2, None),
-    # ([
-    #     (ComplexScalar(1), BaseQubitState("0")),
-    #     (ComplexScalar(1), BaseQubitState("0")),
-    # ], 1, None),
-    # ([
-    #     (ComplexScalar(1), BaseQubitState("0")),
-    #     (ComplexScalar(1), BaseQubitState("00")),
-    # ], None, ValueError),
+    ([
+        (ComplexScalar(1), BaseQubitState("0")),
+        (ComplexScalar(1), BaseQubitState("1")),
+    ], 2, None),
+    ([
+        (ComplexScalar(1), BaseQubitState("0")),
+        (ComplexScalar(1), BaseQubitState("0")),
+    ], 1, None),
+    ([
+        (ComplexScalar(1), BaseQubitState("0")),
+        (ComplexScalar(1), BaseQubitState("00")),
+    ], None, ValueError),
 ])
 def test_init(input, num_terms, error):
     if error is not None:
