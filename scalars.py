@@ -234,11 +234,7 @@ class ProductOfScalars(Scalar):
     def __str__(self):
         to_print = ""
         for scalar in self:
-            factor = f"{scalar}"
-            # Add brackets if scalar is a SumOfScalars
-            if isinstance(scalar, SumOfScalars):
-                factor = f"({factor})"
-            to_print += f"{factor}*"
+            to_print += f"{scalar}*"
         return to_print[:-1]
 
     def __repr__(self):
@@ -398,7 +394,7 @@ class SumOfScalars(Scalar):
         to_print = ""
         for scalar in self:
             to_print += f"{scalar} + "
-        return to_print[:-3]
+        return "(" + to_print[:-3] + ")"
 
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(list(iter(self._terms)))})"
