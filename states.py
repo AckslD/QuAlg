@@ -1,7 +1,7 @@
 import abc
 from collections import defaultdict
 
-from scalars import ComplexScalar, is_scalar
+from scalars import is_scalar
 from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables
 
 
@@ -40,8 +40,6 @@ class BaseState(abc.ABC):
     @abc.abstractmethod
     def _bra_str(self):
         pass
-
-
 
 
 class State:
