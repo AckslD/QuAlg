@@ -29,9 +29,6 @@ def test_init(input, error):
 ])
 def test_eq(c1, c2, expected, error):
     if error is not None:
-        # import pdb
-        # pdb.set_trace()
-        print(c1 == c2)
         with pytest.raises(error):
             c1 == c2
     else:

@@ -63,11 +63,15 @@ class BaseOperator:
 
     def to_operator(self):
         """Converts the base operator to an operator with a single term."""
-        return Operator([self._left, self._right])
+        return Operator([self])
 
     def _assert_class(self, other):
         if not isinstance(other, self.__class__):
             raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")
+
+    def replace_var(self, old_variable, new_variable):
+        return BaseOperator(replace_var(self._left, old_variable, new_variable),
+                            replace_var(self._right, old_variable, new_variable))
 
     def get_variables(self):
         vars = set([])

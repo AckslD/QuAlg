@@ -1,13 +1,13 @@
 import numpy as np
+from itertools import product
+from timeit import default_timer as timer
 
 from scalars import SingleVarFunctionScalar
 from states import BaseQubitState
-from fock_state import BaseFockState, FockOp, FockOpProduct
+from fock_state import BaseFockState, FockOp
 from operators import Operator, outer_product
-from toolbox import simplify, replace_var, get_variables
+from toolbox import simplify, replace_var
 from integrate import integrate
-
-from scalars import ProductOfScalars, InnerProductFunction
 
 
 def get_fock_states():
@@ -26,8 +26,6 @@ def get_fock_states():
     bscd = BaseFockState([FockOp("c", "w1"), FockOp("d", "w2")])
     bsdc = BaseFockState([FockOp("d", "w1"), FockOp("c", "w2")])
     bsdd = BaseFockState([FockOp("d", "w1"), FockOp("d", "w2")])
-    # bs = bscd
-    # print(simplify(bs.inner_product(replace_var(bs))))
     phipsi = SingleVarFunctionScalar("phi", "w1") * SingleVarFunctionScalar("psi", "w2")
     sphipsi = (1 / 2) * phipsi * (bscc.to_state() + bsdc.to_state() - bscd.to_state() - bsdd.to_state())
 
@@ -35,7 +33,11 @@ def get_fock_states():
 
 
 def construct_beam_splitter():
-    fock_states = get_fock_states()
+    fock_states = list(get_fock_states())
+    for i, state in enumerate(fock_states):
+        for old, new in zip(['w1', 'w2'], ['b1', 'b2']):
+            state = replace_var(state, old, new)
+        fock_states[i] = state
     qubit_states = [BaseQubitState(b).to_state() for b in ["00", "01", "10", "11"]]
 
     beam_splitter = sum((
@@ -44,6 +46,7 @@ def construct_beam_splitter():
     ), Operator())
 
     return beam_splitter.simplify()
+
 
 def construct_projector(num_left, num_right):
     vac = BaseFockState([]).to_state()
@@ -59,41 +62,59 @@ def construct_projector(num_left, num_right):
         # P10
         return outer_product(c1, c1)
     elif (num_left, num_right) == (0, 1):
-        # P10
-        return outer_product(c1, c1)
+        # P01
+        return outer_product(d1, d1)
+    elif (num_left, num_right) == (1, 1):
+        # P11
+        return outer_product(c1@d2, c1@d2)
+    elif (num_left, num_right) == (2, 0):
+        # P20
+        return outer_product(c1@c2, c1@c2)
+    elif (num_left, num_right) == (0, 2):
+        # P02
+        return outer_product(d1@d2, d1@d2)
+    else:
+        raise NotImplementedError()
+
 
 def example_projectors():
     s0, sphi, spsi, sphipsi = get_fock_states()
-    
+
     s = sphi
     p = construct_projector(1, 0)
     inner = (p * s).inner_product(s)
     print(integrate(inner))
 
 
-def ultimate_example():
+def ultimate_example(indices):
+    assert len(indices) == 2
+
     u = construct_beam_splitter()
-    p = construct_projector(1, 0)
+    p = construct_projector(*indices)
     m = u.dagger() * p * replace_var(u)
     m = simplify(m)
     # print(m)
 
-    s01 = BaseQubitState("10").to_state()
-    inner = (m * s01).inner_product(s01)
-    print(inner)
-    print(integrate(inner))
+    states = [BaseQubitState("".join(binary)).to_state() for binary in product(["0", "1"], repeat=2)]
+    print("M_{}{}".format(*indices))
+    for sl, sr in product(states, repeat=2):
+        inner = (m * sr).inner_product(sl)
+        bsl = next(iter(sl))[0]
+        bsr = next(iter(sr))[0]
+        print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")
+    return
 
 
 def example_states():
     s0, sphi, spsi, sphipsi = get_fock_states()
-    # print(f"State is: {sphi}\n")
-    # inner = sphi.inner_product(sphi)
-    # print(f"inner product is: {inner}\n")
-    # simplify(inner)
-    # print(f"after simplify: {simplify(inner)}\n")
-    # inner = integrate(inner)
-    # print(f"after integrate: {inner}\n")
-    # return
+    print(f"State is: {sphi}\n")
+    inner = sphi.inner_product(sphi)
+    print(f"inner product is: {inner}\n")
+    simplify(inner)
+    print(f"after simplify: {simplify(inner)}\n")
+    inner = integrate(inner)
+    print(f"after integrate: {inner}\n")
+    return
 
     inner = simplify(sphipsi.inner_product(sphipsi))
     print(inner)
@@ -106,11 +127,14 @@ def example_beam_splitter():
 
 
 def main():
+    t1 = timer()
     # example_states()
     # example_beam_splitter()
     # construct_projector(0, 0)
     # example_projectors()
-    ultimate_example()
+    ultimate_example((1, 1))
+    t2 = timer()
+    print(f"\nTime: {t2 - t1}")
 
 
 if __name__ == '__main__':

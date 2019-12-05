@@ -176,7 +176,6 @@ class State:
     def __len__(self):
         return len(self._terms)
 
-
     def __matmul__(self, other):
         return self.tensor_product(other)
 

@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import permutations
 
-from scalars import ComplexScalar, DeltaFunction, ProductOfScalars
+from scalars import ComplexScalar, DeltaFunction
 from states import BaseState
 from toolbox import assert_str, assert_list_or_tuple, replace_var
 
@@ -158,8 +158,10 @@ class BaseFockState(BaseState):
             raise TypeError()
         l_vars_by_mode = self._fock_op_product.variables_by_modes()
         r_vars_by_mode = other._fock_op_product.variables_by_modes()
+        all_modes = set(l_vars_by_mode.keys()) | set(r_vars_by_mode.keys())
         scalar = 1
-        for mode, l_vars in l_vars_by_mode.items():
+        for mode in all_modes:
+            l_vars = l_vars_by_mode.get(mode, [])
             r_vars = r_vars_by_mode.get(mode, [])
             if len(l_vars) != len(r_vars):
                 return ComplexScalar(0)
