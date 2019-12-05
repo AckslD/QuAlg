@@ -1,7 +1,7 @@
 from copy import copy
 from collections import namedtuple
 
-from toolbox import assert_str, replace_var, simplify, get_variables
+from toolbox import assert_str, replace_var, simplify, get_variables, has_variable
 from scalars import is_number, DeltaFunction, SumOfScalars, ProductOfScalars, InnerProductFunction,\
     SingleVarFunctionScalar, Scalar, assert_is_scalar
 
@@ -16,7 +16,7 @@ class _Integration(Scalar):
         assert_str(variable)
         if not isinstance(scalar, ProductOfScalars):
             raise TypeError(f"scalar should be ProductOfScalars, not {type(scalar)}")
-        if not all(factor.has_variable(variable) for factor in scalar):
+        if not all(has_variable(factor, variable) for factor in scalar):
             raise ValueError("all factors should have the integration term")
         self._scalar = scalar
         self._variable = variable
@@ -83,7 +83,7 @@ def integrate(scalar, variable=None):
         var_factors = []
         other_factors = []
         for factor in factors:
-            if isinstance(factor, Scalar) and factor.has_variable(variable):
+            if isinstance(factor, Scalar) and has_variable(factor, variable):
                 var_factors.append(factor)
             else:
                 other_factors.append(factor)

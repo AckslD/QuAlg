@@ -56,3 +56,9 @@ def get_variables(obj):
     if hasattr(obj, "get_variables"):
         return obj.get_variables()
     return set([])
+
+
+def has_variable(obj, variable):
+    if hasattr(obj, "has_variable"):
+        return obj.has_variable(variable)
+    return False
