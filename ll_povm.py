@@ -3,7 +3,7 @@ from itertools import product
 from timeit import default_timer as timer
 
 from scalars import SingleVarFunctionScalar
-from states import BaseQubitState
+from q_state import BaseQubitState
 from fock_state import BaseFockState, FockOp
 from operators import Operator, outer_product
 from toolbox import simplify, replace_var

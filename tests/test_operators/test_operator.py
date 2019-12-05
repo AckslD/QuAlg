@@ -1,6 +1,6 @@
 import numpy as np
 
-from states import BaseQubitState
+from q_state import BaseQubitState
 from operators import outer_product
 
 

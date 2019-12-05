@@ -1,6 +1,6 @@
 import pytest
 
-from states import BaseQubitState
+from q_state import BaseQubitState
 from scalars import ComplexScalar
 
 
