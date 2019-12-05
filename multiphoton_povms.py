@@ -12,8 +12,8 @@ from toolbox import simplify, replace_var
 from integrate import integrate
 
 
-def get_fock_states(photon_number_a, photon_number_b):
-    """Function that creates Fock states |n,m> for (n <= a) and (m <= b).
+def generate_fock_states(photon_number_a, photon_number_b):
+    """Function that generates Fock states |n,m> for (n <= a) and (m <= b).
 
     Parameters
     ----------
@@ -37,27 +37,30 @@ def get_fock_states(photon_number_a, photon_number_b):
 
             for i in range(n):
                 phi = SingleVarFunctionScalar(f"phi_{i}", f"w{i}")
-                a_n @= phi * State(base_states=[BaseFockState([FockOp("c", f"w_{i}")]),
-                                                BaseFockState([FockOp("d", f"w_{i}")])], scalars=[1, 1])
+                a_n @= phi * State(base_states=[BaseFockState([FockOp("c", f"w{i}")]),
+                                                BaseFockState([FockOp("d", f"w{i}")])], scalars=[1, 1])
 
             for i in range(n, n+m):
                 psi = SingleVarFunctionScalar(f"psi_{i}", f"w{i}")
-                b_n @= psi * State(base_states=[BaseFockState([FockOp("c", f"w_{i}")]),
-                                                BaseFockState([FockOp("d", f"w_{i}")])], scalars=[1, -1])
+                b_n @= psi * State(base_states=[BaseFockState([FockOp("c", f"w{i}")]),
+                                                BaseFockState([FockOp("d", f"w{i}")])], scalars=[1, -1])
 
             norm = 1/np.sqrt(2**(n+m) * math.factorial(n) * math.factorial(m))
-            state_nm = norm * a_n@b_n
+            state_nm = ComplexScalar(norm) * a_n@b_n
             print("state |{},{}> = {}".format(n, m, simplify(state_nm)))
 
             # check length
-            if len(state_nm) == 2**(n+m):
-                print("has length:", len(state_nm))
-            else:
+            if len(state_nm) != 2**(n+m):
                 raise ValueError("State has the wrong length.")
 
             states.append(state_nm)
 
     return states
+
+
+def generate_projectors(max_number_photons):
+    """Generate the photon number projectors P_i,j on photon numbers up to n = max_num_photons."""
+    pass
 
 
 if __name__ == '__main__':
