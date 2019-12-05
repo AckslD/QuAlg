@@ -42,55 +42,6 @@ class BaseState(abc.ABC):
         pass
 
 
-class BaseQubitState(BaseState):
-    def __init__(self, binary):
-        if not isinstance(binary, str):
-            raise TypeError(f"binary should be a string, not {type(binary)}")
-        if not set(binary) <= {'0', '1'}:
-            raise ValueError(f"binary should contain only '0' and '1', not {set(binary)}")
-        self._binary = binary
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self._binary == other._binary
-
-    def __hash__(self):
-        return hash(self._binary)
-
-    def __str__(self):
-        return f"|{self._binary}>"
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self._binary)})"
-
-    def _compatible(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return len(self._binary) == len(other._binary)
-
-    def inner_product(self, other):
-        self._assert_class(other)
-        if not self._compatible(other):
-            raise ValueError("Can only do inner product between states on the same number of qubits")
-        if self == other:
-            return ComplexScalar(1)
-        else:
-            return ComplexScalar(0)
-
-    def tensor_product(self, other):
-        self._assert_class(other)
-        return BaseQubitState(self._binary + other._binary)
-
-    def _bra_str(self):
-        return f"<{self._binary}|"
-
-    def _assert_class(self, other):
-        if not isinstance(other, self.__class__):
-            raise TypeError(f"other is not of type {self.__class__}, but {type(other)}")
-
-    def get_variables(self):
-        return set([])
 
 
 class State:
