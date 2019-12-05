@@ -73,11 +73,16 @@ def integrate(scalar, variable=None):
     assert_str(variable)
     if isinstance(scalar, SumOfScalars):
         new_scalar = sum(integrate(s, variable) for s in scalar._terms)
-    elif isinstance(scalar, ProductOfScalars):
+    # elif isinstance(scalar, ProductOfScalars):
+    elif isinstance(scalar, Scalar):
+        if isinstance(scalar, ProductOfScalars):
+            factors = scalar._factors
+        else:
+            factors = [scalar]
         # Split factors based on if they contain the integration variable or not
         var_factors = []
         other_factors = []
-        for factor in scalar._factors:
+        for factor in factors:
             if isinstance(factor, Scalar) and factor.has_variable(variable):
                 var_factors.append(factor)
             else:
@@ -106,8 +111,8 @@ def _evaluate_delta_function(integration_scalar):
     # Get the other variable in the delta function
     other_var = next(v for v in delta._vars if v != variable)
     integrand = replace_var(integrand, old_variable=variable, new_variable=other_var)
-    # Remove the delta funtion (recall that replace_var creates a copy)
-    integrand._factors.pop(i)
+    # Replace the delta function with 1 (recall that replace_var creates a copy)
+    integrand._factors[i] = 1
 
     return integrand
 
