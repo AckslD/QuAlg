@@ -131,8 +131,9 @@ class State:
     def __iter__(self):
         return iter(self._terms.items())
 
-    def __getitem__(self, key):
-        return self._terms[key]
+    def get_scalar(self, base_state):
+        """Returns the scalar of the given base_state"""
+        return self._terms.get(base_state, 0)
 
     def inner_product(self, other, first_replace_var=True):
         if not isinstance(other, self.__class__):

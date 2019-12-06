@@ -65,51 +65,51 @@ class Scalar(abc.ABC):
         pass
 
 
-class ComplexScalar(Scalar):
-    def __init__(self, c=0):
-        self.assert_number(c)
+# class ComplexScalar(Scalar):
+#     def __init__(self, c=0):
+#         self.assert_number(c)
 
-        self._c = c
+#         self._c = c
 
-    def __eq__(self, other):
-        return self._do_binary_op(other, operator.eq, bool)
+#     def __eq__(self, other):
+#         return self._do_binary_op(other, operator.eq, bool)
 
-    def __hash__(self):
-        return hash(self._key())
+#     def __hash__(self):
+#         return hash(self._key())
 
-    def __mul__(self, other):
-        return self._do_binary_op(other, operator.mul, self.__class__)
+#     def __mul__(self, other):
+#         return self._do_binary_op(other, operator.mul, self.__class__)
 
-    def __add__(self, other):
-        return self._do_binary_op(other, operator.add, self.__class__)
+#     def __add__(self, other):
+#         return self._do_binary_op(other, operator.add, self.__class__)
 
-    def __str__(self):
-        return str(self._c)
+#     def __str__(self):
+#         return str(self._c)
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self._c)})"
+#     def __repr__(self):
+#         return f"{self.__class__.__name__}({repr(self._c)})"
 
-    def _do_binary_op(self, other, op, output_class):
-        if is_number(other):
-            return output_class(op(self._c, other))
-        elif isinstance(other, self.__class__):
-            return output_class(op(self._c, other._c))
-        else:
-            return NotImplemented
+#     def _do_binary_op(self, other, op, output_class):
+#         if is_number(other):
+#             return output_class(op(self._c, other))
+#         elif isinstance(other, self.__class__):
+#             return output_class(op(self._c, other._c))
+#         else:
+#             return NotImplemented
 
-    def conjugate(self):
-        if isinstance(self._c, complex):
-            return ComplexScalar(self._c.conjugate())
-        else:
-            return ComplexScalar(self._c)
+#     def conjugate(self):
+#         if isinstance(self._c, complex):
+#             return ComplexScalar(self._c.conjugate())
+#         else:
+#             return ComplexScalar(self._c)
 
-    def _key(self):
-        return self._c
+#     def _key(self):
+#         return self._c
 
-    @staticmethod
-    def assert_number(c):
-        if not is_number(c):
-            raise TypeError(f"c should be of type int, float or complex, not {type(c)}")
+#     @staticmethod
+#     def assert_number(c):
+#         if not is_number(c):
+#             raise TypeError(f"c should be of type int, float or complex, not {type(c)}")
 
 
 class SingleVarFunctionScalar(Scalar):
@@ -557,9 +557,8 @@ def test_simplify():
     a = SingleVarFunctionScalar('a', 'x')
     b = SingleVarFunctionScalar('b', 'x')
     c = SingleVarFunctionScalar('c', 'x')
-    zero = ComplexScalar(0)
 
-    expr = (a + b) * (c + zero)
+    expr = (a + b) * (c + 0)
     print(expr.simplify())
 
 

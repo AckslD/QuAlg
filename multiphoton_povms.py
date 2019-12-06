@@ -4,8 +4,9 @@ import numpy as np
 import math
 from itertools import product
 
-from scalars import SingleVarFunctionScalar, ComplexScalar
-from states import BaseQubitState, State
+from scalars import SingleVarFunctionScalar
+from q_state import BaseQubitState
+from states import State
 from fock_state import BaseFockState, FockOp, FockOpProduct
 from operators import Operator, outer_product
 from toolbox import simplify, replace_var

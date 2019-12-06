@@ -109,7 +109,10 @@ def _evaluate_delta_function(integration_scalar):
     # Replace variables with the variable to the other variable in the delta function
     i, delta = deltas[0]
     # Get the other variable in the delta function
-    other_var = next(v for v in delta._vars if v != variable)
+    try:
+        other_var = next(v for v in delta._vars if v != variable)
+    except StopIteration:
+        raise RuntimeError(f"Encountered delta function with the same variable: {delta}")
     integrand = replace_var(integrand, old_variable=variable, new_variable=other_var)
     # Replace the delta function with 1 (recall that replace_var creates a copy)
     integrand._factors[i] = 1

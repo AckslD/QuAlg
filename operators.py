@@ -181,8 +181,9 @@ class Operator:
     def __iter__(self):
         return iter(self._terms.items())
 
-    def __getitem__(self, key):
-        return self._terms[key]
+    def get_scalar(self, base_op):
+        """Returns the scalar of the given base_op"""
+        return self._terms.get(base_op, 0)
 
     def dagger(self):
         new_op = Operator()
