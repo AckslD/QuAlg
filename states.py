@@ -37,9 +37,24 @@ class BaseState(abc.ABC):
         """Converts the base state to a state with a single term."""
         return State([self])
 
+    @property
+    def shape(self):
+        """Returns the shape of the state, e.q. (2,) for a qubit.
+        
+        `None` means that the shape is undefined, e.g. if the state is infinite-dimensional.
+        """
+        return None
+
     @abc.abstractmethod
     def _bra_str(self):
         pass
+
+    def _vector_index(self):
+        """Specifies the index in an actual vector.
+        
+        `None` means that the index is undefined, e.g. if the state is infinite-dimensional.
+        """
+        return None
 
 
 class State:

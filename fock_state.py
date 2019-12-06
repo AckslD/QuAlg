@@ -152,6 +152,10 @@ class BaseFockState(BaseState):
             to_print += f"{fock_op}^{count}"
         return to_print + "|0>"
 
+    @property
+    def shape(self):
+        return None
+
     def inner_product(self, other):
         # TODO check this for more than one creation/annihilation operators
         if not isinstance(other, self.__class__):

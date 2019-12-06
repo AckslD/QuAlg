@@ -1,6 +1,7 @@
+import numpy as np
 from collections import defaultdict
 
-from scalars import Scalar, is_scalar
+from scalars import Scalar, is_scalar, is_number
 from states import BaseState, State
 from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
 
@@ -38,6 +39,10 @@ class BaseOperator:
 
     def __repr__(self):
         return f"{self.__class__.__name__}({repr(self._left)}, {repr(self._right)})"
+
+    @property
+    def shape(self):
+        return (self._left.shape[0], self._right.shape[0])
 
     def _mul_compatible(self, other):
         """Used to check if an operator or state is compatible for multiplication.
@@ -79,6 +84,9 @@ class BaseOperator:
             vars |= bs.get_variables()
 
         return vars
+
+    def _matrix_index(self):
+        return self._left._vector_index(), self._right._vector_index()
 
 
 class Operator:
@@ -185,6 +193,13 @@ class Operator:
     def __iter__(self):
         return iter(self._terms.items())
 
+    @property
+    def shape(self):
+        if len(self) == 0:
+            return (0, 0)
+        else:
+            return next(iter(self._terms)).shape
+
     def get_scalar(self, base_op):
         """Returns the scalar of the given base_op"""
         return self._terms.get(base_op, 0)
@@ -223,12 +238,24 @@ class Operator:
 
         return vars
 
-    # TODO
-    # def expectation_value(self, state, first_replace_var=True):
-    #     if not isinstance(state, State):
-    #         raise TypeError(f"state needs to be a State, not {type(state)}")
+    def to_numpy_matrix(self, convert_scalars=None):
+        """Converts the operator to a numpy matrix.
 
-    #     return state.inner_product(self * right, first_replace_var=first_replace_var)
+        If there are non-number scalars then the provided function `convert_scalars`
+        is used to convert a non-number scalar to a number.
+        This function should then take a scalar and return a number.
+        """
+        matrix = np.zeros(self.shape)
+        for base_op, scalar in self:
+            index = base_op._matrix_index()
+            if not is_number(scalar):
+                if convert_scalars is None:
+                    raise ValueError("If the operator contains non-numbers, "
+                                     "the function `convert_scalars` needs to be provided")
+                scalar = convert_scalars(scalar)
+            matrix[index] = scalar
+
+        return matrix
 
     def _prune_zero_terms(self):
         to_remove = []
