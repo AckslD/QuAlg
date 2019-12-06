@@ -197,7 +197,7 @@ def construct_beam_splitter(num_photons_a, num_photons_b):
     return beam_splitter.simplify()
 
 
-def calculate_povm(clicks_left, clicks_right):
+def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     """Functions that calculate the effective POVM elements for (n, m) clicks (left, right) respectively.
 
     Note currently only working up to 9 incoming photons from each side, then qudit numbering fails.
@@ -205,9 +205,11 @@ def calculate_povm(clicks_left, clicks_right):
     Parameters
     ----------
     clicks_left : int
-        Maximum number of photons coming from the left.
+        Number of clicks on the left.
     clicks_right : int
-        Maximum number of photons coming from the right.
+        Number of clicks on the right.
+    max_num_photons_per_side : int
+        Maximum number of photons incoming from each side.
 
     Returns
     -------
@@ -215,27 +217,81 @@ def calculate_povm(clicks_left, clicks_right):
         Effective POVM M_i_j.
 
     """
-    incoming_photons = 3
+    # TODO: fix this parameter
+    incoming_photons = max_num_photons_per_side
 
     u = construct_beam_splitter(incoming_photons, incoming_photons)
     p = construct_projector(clicks_left, clicks_right)
     m = u.dagger() * p * replace_var(u)
     m = simplify(m)
     print(m)
-    # generate qubit states
+    # generate possible states
     combi = []
     for j in range(incoming_photons + 1):
         for k in range(incoming_photons + 1):
             combi.append(f"{j}" + f"{k}")
     states = [BaseQuditState(b).to_state() for b in combi]
     print("M_{}{}".format(clicks_left, clicks_right))
+    # output individual matrix elements
     for sl, sr in product(states, repeat=2):
         inner = (m * sr).inner_product(sl)
         bsl = next(iter(sl))[0]
         bsr = next(iter(sr))[0]
         print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")
-    print(type(m))
+
     return m
+
+
+def generate_effective_povms(incoming_left, incoming_right):
+    """Function that generates all possible POVM operators for arbitrary number of incoming photons from the left
+    and the right.
+
+    Note: Should currently only be used with up to 9 from each side, because 2-digit number mess up the naming of the
+    QuditStates.
+
+    Parameters
+    ----------
+    incoming_left : int
+        Maximum number of incoming photons from the left.
+    incoming_right : int
+        Maximum number of incoming photons from the right.
+
+    Returns
+    -------
+    operators : list of operators (:class:'operators.Operator')
+        List of all possible POVM operators for the given number of incoming photons.
+
+    """
+    total_photon_number = incoming_left + incoming_right
+    operators = []
+    for n in range(total_photon_number + 1):
+        for m in range(total_photon_number + 1):
+            if n + m <= total_photon_number:
+                operators.append(calculate_povm(n, m, max(incoming_left, incoming_right)))
+
+    return operators
+
+
+'''def to_2d_array(operator, photon_number):
+    """Function converting the operator to a 2D numpy array.
+
+    Parameters
+    ----------
+    operator : instance of :class:'operators.Operator'
+        Operator to convert into array.
+    photon_number : int
+        photon number
+
+    """
+    if len(shape) > 2:
+        raise ValueError(f"Shape of the 2d array should have only 2 elements not {len(shape)}.")
+    # sort terms by left entry
+    d = defaultdict(list)
+    for item in self._terms.keys():
+        # this should be a dict with all every entry having the same left
+        d[item._left].append(self._terms[item])
+    # now we just need to combine the entries to an array
+    return np.array(d.values())'''
 
 
 if __name__ == '__main__':
@@ -252,6 +308,7 @@ if __name__ == '__main__':
     print("P_{}_{}: {}".format(2, 4, p_dict[(2, 4)]))
     construct_beam_splitter(num, num)'''
     start_time = time.time()
-    calculate_povm(3, 3)
+    m = calculate_povm(0, 0, 1)
     print("elapsed time:", time.time() - start_time)
+    print(to_2d_array(m, (16, 16)))
 

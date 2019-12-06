@@ -2,9 +2,10 @@ import unittest
 import time
 from itertools import product
 
-from multiphoton_povms import generate_fock_states, construct_fock_state, construct_projector
+from multiphoton_povms import generate_fock_states, construct_fock_state, construct_projector, generate_effective_povms
 from integrate import integrate
 from toolbox import simplify
+from operators import Operator
 
 
 class TestMultiPhoton(unittest.TestCase):
@@ -55,6 +56,16 @@ class TestMultiPhoton(unittest.TestCase):
                 else:
                     # self.assertAlmostEqual(norm, 0)
                     pass
+
+    def test_povms(self):
+        """Tests the correct generation of POVM operators."""
+        n = 1
+        povm_ops = generate_effective_povms(n, n)
+        print("done generating")
+        sum = Operator()
+        for op in povm_ops:
+            sum += op
+        print(simplify(integrate(sum)))
 
 
 if __name__ == "__main__":
