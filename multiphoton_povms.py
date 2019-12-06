@@ -210,7 +210,8 @@ def calculate_povm(clicks_left, clicks_right):
 
     Returns
     -------
-    povm
+    m : instance of :class:'operators.Operator'
+        Effective POVM M_i_j.
 
     """
     incoming_photons = 3
@@ -222,18 +223,17 @@ def calculate_povm(clicks_left, clicks_right):
     print(m)
     # generate qubit states
     combi = []
-    for n in range(incoming_photons + 1):
-        for m in range(incoming_photons + 1):
-            combi.append(f"{n}" + f"{m}")
+    for j in range(incoming_photons + 1):
+        for k in range(incoming_photons + 1):
+            combi.append(f"{j}" + f"{k}")
     states = [BaseQuditState(b).to_state() for b in combi]
-    # states = [BaseQubitState("".join(binary)).to_state() for binary in product(["0", "1"], repeat=2)]
-    # TODO: all POVMs have same entries :D
     print("M_{}{}".format(clicks_left, clicks_right))
-    for sl, sr in product(states, states):
+    for sl, sr in product(states, repeat=2):
         inner = (m * sr).inner_product(sl)
         bsl = next(iter(sl))[0]
         bsr = next(iter(sr))[0]
         print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")
+    print(type(m))
     return m
 
 
@@ -251,6 +251,6 @@ if __name__ == '__main__':
     print("P_{}_{}: {}".format(2, 4, p_dict[(2, 4)]))
     construct_beam_splitter(num, num)'''
     start_time = time.time()
-    calculate_povm(1, 0)
+    calculate_povm(3, 3)
     print("elapsed time:", time.time() - start_time)
 
