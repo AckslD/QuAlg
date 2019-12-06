@@ -126,6 +126,8 @@ class Operator:
         # compute output state for each term of the operator
         new_state = State([])
         for base_op, scalar in self._terms.items():
+            if is_zero(scalar):
+                continue
             new_state += scalar * (base_op * state)
 
         return new_state

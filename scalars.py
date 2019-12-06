@@ -24,6 +24,12 @@ class Scalar(abc.ABC):
         return hash(self._key())
 
     def __add__(self, other):
+        # Check if one is zero
+        if is_zero(other):
+            return copy(self)
+        if is_zero(self):
+            return copy(other)
+
         if not is_scalar(other):
             return NotImplemented
         if isinstance(other, SumOfScalars):
@@ -359,6 +365,12 @@ class SumOfScalars(Scalar):
         return f"{self.__class__.__name__}({repr(list(iter(self._terms)))})"
 
     def __add__(self, other):
+        # Check if one is zero
+        if is_zero(other):
+            return copy(self)
+        if is_zero(self):
+            return copy(other)
+
         if not is_scalar(other):
             return NotImplemented
         if is_number(other):

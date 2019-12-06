@@ -2,7 +2,7 @@ import abc
 from collections import defaultdict
 
 from scalars import is_scalar
-from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables
+from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
 
 
 class BaseState(abc.ABC):
@@ -83,9 +83,12 @@ class State:
         if not self._compatible(other):
             raise ValueError(f"other ({other}) is not compatible with self ({self})")
         new_state = State([])
-        for state in [self, other]:
-            for base_state, scalar in state._terms.items():
-                new_state._terms[base_state] += scalar
+        # Add this terms
+        for base_state, scalar in self._terms.items():
+            new_state._terms[base_state] = scalar
+        # Add the other terms
+        for base_state, scalar in other._terms.items():
+            new_state._terms[base_state] += scalar
 
         # Check if there are any zero terms
         new_state._prune_zero_terms()
@@ -147,6 +150,13 @@ class State:
         inner = 0
         for self_base_state, self_scalar in self._terms.items():
             for other_base_state, other_scalar in other._terms.items():
+                factors = [
+                    self_scalar.conjugate(),
+                    other_scalar,
+                    self_base_state.inner_product(other_base_state),
+                ]
+                if any(is_zero(factor) for factor in factors):
+                    continue
                 inner += (self_scalar.conjugate() * other_scalar) * self_base_state.inner_product(other_base_state)
 
         return inner
