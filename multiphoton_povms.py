@@ -64,25 +64,23 @@ def construct_fock_state(num_mode_a, num_mode_b):
     b_n = BaseFockState().to_state()
 
     for i in range(num_mode_a):
-        phi = SingleVarFunctionScalar(f"phi_{i+1}", f"w{i}")
-        #phi = SingleVarFunctionScalar(f"phi", f"w{i}")
+        #phi = SingleVarFunctionScalar(f"phi_{i+1}", f"w{i}")
+        phi = SingleVarFunctionScalar(f"phi", f"w{i}")
         a_n @= phi * State(base_states=[BaseFockState([FockOp("c", f"w{i}")]),
-                                        #a_n @= State(base_states=[BaseFockState([FockOp("c", f"w{i}")]),
                                         BaseFockState([FockOp("d", f"w{i}")])], scalars=[1, 1])
 
     for i in range(num_mode_a, num_mode_a+num_mode_b):
-        psi = SingleVarFunctionScalar(f"psi_{i-num_mode_a+1}", f"w{i}")
-        #psi = SingleVarFunctionScalar(f"psi", f"w{i}")
+        #psi = SingleVarFunctionScalar(f"psi_{i-num_mode_a+1}", f"w{i}")
+        psi = SingleVarFunctionScalar(f"psi", f"w{i}")
         b_n @= psi * State(base_states=[BaseFockState([FockOp("c", f"w{i}")]),
-                                        #b_n @= State(base_states=[BaseFockState([FockOp("c", f"w{i}")]),
                                         BaseFockState([FockOp("d", f"w{i}")])], scalars=[1, -1])
 
     # TODO : add normalization again and implement unittest
     norm = 1/np.sqrt(2**(num_mode_a+num_mode_b) * math.factorial(num_mode_a) * math.factorial(num_mode_b))
 
-    state_nm = norm * a_n@b_n
-    # state_nm = (a_n@b_n)
-    # print("state |{},{}> = {}".format(n, m, simplify(state_nm)))
+    state_nm = a_n@b_n
+    state_nm = simplify(state_nm) * norm
+    # print("state |{},{}> = {}".format(num_mode_a, num_mode_b, simplify(state_nm)))
 
     # check length
     if len(state_nm) != 2**(num_mode_a+num_mode_b):
@@ -150,7 +148,10 @@ def construct_projector(num_left, num_right):
     for i in range(num_left, num_left+num_right):
         state @= BaseFockState([FockOp("d", f"w{i+1}")]).to_state()
     # state = simplify(state)
+    norm = 1/np.sqrt(math.factorial(num_left) * math.factorial(num_right))
+    state = state * norm
     p_i_j = outer_product(state, state)
+    print(f"proj {repr(p_i_j)}")
     return p_i_j
 
 
@@ -214,7 +215,7 @@ def calculate_povm(clicks_left, clicks_right):
     povm
 
     """
-    incoming_photons = 1
+    incoming_photons = 3
 
     u = construct_beam_splitter(incoming_photons, incoming_photons)
     p = construct_projector(clicks_left, clicks_right)
