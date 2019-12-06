@@ -21,3 +21,12 @@ def test_mul_state():
     assert np.isclose((H*x0).inner_product(z1), 0)
     assert np.isclose((H*x0).inner_product(x0), 1 / np.sqrt(2))
     assert np.isclose((H*x0).inner_product(x1), 1 / np.sqrt(2))
+
+
+def test_to_numpy_matrix():
+    phi = (1 / np.sqrt(2)) * (BaseQubitState("00").to_state() + BaseQubitState("11").to_state())
+    op = outer_product(phi, phi)
+    expected = np.array([[1, 0, 0, 1], [0, 0, 0, 0], [0, 0, 0, 0], [1, 0, 0, 1]]) / 2
+    print(op)
+    print(op.to_numpy_matrix())
+    assert np.all(np.isclose(op.to_numpy_matrix(), expected))
