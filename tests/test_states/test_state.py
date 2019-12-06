@@ -1,27 +1,27 @@
 import pytest
 import numpy as np
 
-from states import State, BaseQubitState
-from scalars import ComplexScalar
+from states import State
+from q_state import BaseQubitState
 
 
 @pytest.mark.parametrize("input, num_terms, error", [
     (BaseQubitState("0"), None, TypeError),
-    ((ComplexScalar(1), BaseQubitState("0")), None, TypeError),
+    ((1, BaseQubitState("0")), None, TypeError),
     ([(None, BaseQubitState("0"))], None, TypeError),
-    ([(ComplexScalar(1), None)], None, TypeError),
+    ([(1, None)], None, TypeError),
     ([BaseQubitState("0")], 1, None),
     ([
-        (ComplexScalar(1), BaseQubitState("0")),
-        (ComplexScalar(1), BaseQubitState("1")),
+        BaseQubitState("0"),
+        BaseQubitState("1"),
     ], 2, None),
     ([
-        (ComplexScalar(1), BaseQubitState("0")),
-        (ComplexScalar(1), BaseQubitState("0")),
+        BaseQubitState("0"),
+        BaseQubitState("0"),
     ], 1, None),
     ([
-        (ComplexScalar(1), BaseQubitState("0")),
-        (ComplexScalar(1), BaseQubitState("00")),
+        BaseQubitState("0"),
+        BaseQubitState("00"),
     ], None, ValueError),
 ])
 def test_init(input, num_terms, error):

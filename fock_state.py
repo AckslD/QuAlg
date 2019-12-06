@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import permutations
 
-from scalars import ComplexScalar, DeltaFunction
+from scalars import DeltaFunction
 from states import BaseState
 from toolbox import assert_str, assert_list_or_tuple, replace_var
 
@@ -164,7 +164,7 @@ class BaseFockState(BaseState):
             l_vars = l_vars_by_mode.get(mode, [])
             r_vars = r_vars_by_mode.get(mode, [])
             if len(l_vars) != len(r_vars):
-                return ComplexScalar(0)
+                return 0
             factor = 0
             for perm_r_vars in permutations(r_vars):
                 term = 1

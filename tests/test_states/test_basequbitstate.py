@@ -1,7 +1,6 @@
 import pytest
 
 from q_state import BaseQubitState
-from scalars import ComplexScalar
 
 
 @pytest.mark.parametrize("input, error", [
@@ -18,7 +17,7 @@ def test_init(input, error):
             BaseQubitState(input)
     else:
         s = BaseQubitState(input)
-        assert s._binary == input
+        assert s._digits == input
 
 
 @pytest.mark.parametrize("state1, state2, expected, error", [
@@ -39,10 +38,10 @@ def test_eq(state1, state2, expected, error):
 
 
 @pytest.mark.parametrize("state1, state2, expected, error", [
-    (BaseQubitState("0"), BaseQubitState("0"), ComplexScalar(1), None),
-    (BaseQubitState("1"), BaseQubitState("0"), ComplexScalar(0), None),
-    (BaseQubitState("0000"), BaseQubitState("0000"), ComplexScalar(1), None),
-    (BaseQubitState("0001"), BaseQubitState("0000"), ComplexScalar(0), None),
+    (BaseQubitState("0"), BaseQubitState("0"), 1, None),
+    (BaseQubitState("1"), BaseQubitState("0"), 0, None),
+    (BaseQubitState("0000"), BaseQubitState("0000"), 1, None),
+    (BaseQubitState("0001"), BaseQubitState("0000"), 0, None),
     (BaseQubitState("0000"), BaseQubitState("000"), None, ValueError),
     (BaseQubitState("0000"), "0000", None, TypeError),
 ])

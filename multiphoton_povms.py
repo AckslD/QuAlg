@@ -5,9 +5,10 @@ import math
 from itertools import product
 import time
 
-from scalars import SingleVarFunctionScalar, ComplexScalar
+
+from scalars import SingleVarFunctionScalar
+from q_state import BaseQubitState
 from states import State
-from q_state import BaseQuditState
 from fock_state import BaseFockState, FockOp, FockOpProduct
 from operators import Operator, outer_product
 from toolbox import simplify, replace_var

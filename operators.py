@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from scalars import Scalar, is_scalar
 from states import BaseState, State
-from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables
+from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
 
 
 class BaseOperator:
@@ -126,6 +126,8 @@ class Operator:
         # compute output state for each term of the operator
         new_state = State([])
         for base_op, scalar in self._terms.items():
+            if is_zero(scalar):
+                continue
             new_state += scalar * (base_op * state)
 
         return new_state
@@ -143,6 +145,8 @@ class Operator:
             for other_base_op, other_scalar in operator._terms.items():
                 new_base_op = BaseOperator(self_base_op._left, other_base_op._right)
                 new_scalar = self_base_op._right.inner_product(other_base_op._left) * self_scalar * other_scalar
+                if is_zero(new_scalar):
+                    continue
                 new_op._terms[new_base_op] += new_scalar
 
         return new_op
@@ -181,8 +185,9 @@ class Operator:
     def __iter__(self):
         return iter(self._terms.items())
 
-    def __getitem__(self, key):
-        return self._terms[key]
+    def get_scalar(self, base_op):
+        """Returns the scalar of the given base_op"""
+        return self._terms.get(base_op, 0)
 
     def dagger(self):
         new_op = Operator()

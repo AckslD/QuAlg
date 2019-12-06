@@ -1,4 +1,3 @@
-from scalars import ComplexScalar
 from states import BaseState
 
 
@@ -33,9 +32,9 @@ class BaseQuditState(BaseState):
         if not self._compatible(other):
             raise ValueError("Can only do inner product between states on the same number of qubits")
         if self == other:
-            return ComplexScalar(1)
+            return 1
         else:
-            return ComplexScalar(0)
+            return 0
 
     def tensor_product(self, other):
         self._assert_class(other)

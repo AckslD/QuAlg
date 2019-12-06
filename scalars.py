@@ -1,5 +1,4 @@
 import abc
-import operator
 from copy import copy
 from collections import defaultdict
 from itertools import product
@@ -25,6 +24,12 @@ class Scalar(abc.ABC):
         return hash(self._key())
 
     def __add__(self, other):
+        # Check if one is zero
+        if is_zero(other):
+            return copy(self)
+        if is_zero(self):
+            return copy(other)
+
         if not is_scalar(other):
             return NotImplemented
         if isinstance(other, SumOfScalars):
@@ -63,53 +68,6 @@ class Scalar(abc.ABC):
     @abc.abstractmethod
     def _key(self):
         pass
-
-
-class ComplexScalar(Scalar):
-    def __init__(self, c=0):
-        self.assert_number(c)
-
-        self._c = c
-
-    def __eq__(self, other):
-        return self._do_binary_op(other, operator.eq, bool)
-
-    def __hash__(self):
-        return hash(self._key())
-
-    def __mul__(self, other):
-        return self._do_binary_op(other, operator.mul, self.__class__)
-
-    def __add__(self, other):
-        return self._do_binary_op(other, operator.add, self.__class__)
-
-    def __str__(self):
-        return str(self._c)
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self._c)})"
-
-    def _do_binary_op(self, other, op, output_class):
-        if is_number(other):
-            return output_class(op(self._c, other))
-        elif isinstance(other, self.__class__):
-            return output_class(op(self._c, other._c))
-        else:
-            return NotImplemented
-
-    def conjugate(self):
-        if isinstance(self._c, complex):
-            return ComplexScalar(self._c.conjugate())
-        else:
-            return ComplexScalar(self._c)
-
-    def _key(self):
-        return self._c
-
-    @staticmethod
-    def assert_number(c):
-        if not is_number(c):
-            raise TypeError(f"c should be of type int, float or complex, not {type(c)}")
 
 
 class SingleVarFunctionScalar(Scalar):
@@ -182,6 +140,7 @@ class DeltaFunction(Scalar):
     def __init__(self, var1, var2):
         assert_str(var1)
         assert_str(var2)
+        self._assert_different(var1, var2)
         self._vars = [var1, var2]
 
     def conjugate(self):
@@ -200,6 +159,7 @@ class DeltaFunction(Scalar):
         if old_variable in new_vars:
             new_vars.remove(old_variable)
             new_vars.append(new_variable)
+        self._assert_different(*new_vars)
         return self.__class__(*new_vars)
 
     def get_variables(self):
@@ -216,6 +176,11 @@ class DeltaFunction(Scalar):
 
     def _key(self):
         return frozenset(self._vars)
+
+    @staticmethod
+    def _assert_different(var1, var2):
+        if var1 == var2:
+            raise ValueError(f"Variables in a delta function needs to be different, not {var1} and {var2}")
 
 
 class ProductOfScalars(Scalar):
@@ -400,6 +365,12 @@ class SumOfScalars(Scalar):
         return f"{self.__class__.__name__}({repr(list(iter(self._terms)))})"
 
     def __add__(self, other):
+        # Check if one is zero
+        if is_zero(other):
+            return copy(self)
+        if is_zero(self):
+            return copy(other)
+
         if not is_scalar(other):
             return NotImplemented
         if is_number(other):
@@ -557,9 +528,8 @@ def test_simplify():
     a = SingleVarFunctionScalar('a', 'x')
     b = SingleVarFunctionScalar('b', 'x')
     c = SingleVarFunctionScalar('c', 'x')
-    zero = ComplexScalar(0)
 
-    expr = (a + b) * (c + zero)
+    expr = (a + b) * (c + 0)
     print(expr.simplify())
 
 
