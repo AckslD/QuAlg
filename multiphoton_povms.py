@@ -6,7 +6,8 @@ from itertools import product
 import time
 
 from scalars import SingleVarFunctionScalar, ComplexScalar
-from states import BaseQubitState, State
+from states import State
+from q_state import BaseQuditState
 from fock_state import BaseFockState, FockOp, FockOpProduct
 from operators import Operator, outer_product
 from toolbox import simplify, replace_var
@@ -77,10 +78,10 @@ def construct_fock_state(num_mode_a, num_mode_b):
                                         BaseFockState([FockOp("d", f"w{i}")])], scalars=[1, -1])
 
     # TODO : add normalization again and implement unittest
-    #norm = 1/np.sqrt(2**(n+m) * math.factorial(n) * math.factorial(m))
+    norm = 1/np.sqrt(2**(num_mode_a+num_mode_b) * math.factorial(num_mode_a) * math.factorial(num_mode_b))
 
-    #state_nm = norm * a_n@b_n
-    state_nm = (a_n@b_n)
+    state_nm = norm * a_n@b_n
+    # state_nm = (a_n@b_n)
     # print("state |{},{}> = {}".format(n, m, simplify(state_nm)))
 
     # check length
@@ -154,7 +155,21 @@ def construct_projector(num_left, num_right):
 
 
 def construct_beam_splitter(num_photons_a, num_photons_b):
-    """Function constructing the beam splitter Unitary for arbitrary number of incoming photons."""
+    """Function constructing the beam splitter Unitary for arbitrary number of incoming photons.
+
+    Parameters
+    ----------
+    num_photons_a : int
+        Number of Photons incoming from the left.
+    num_photons_b : int
+        Number of Photons incoming from the right.
+
+    Returns
+    -------
+    beam_splitter : instance of :class:'operators.Operator'
+        Unitary describing the action of the beam splitter.
+
+    """
     fock_states, _ = generate_fock_states(num_photons_a, num_photons_b)
     # replace variables
     for i, state in enumerate(fock_states):
@@ -171,21 +186,8 @@ def construct_beam_splitter(num_photons_a, num_photons_b):
     combi = []
     for n in range(num_photons_a + 1):
         for m in range(num_photons_b + 1):
-            if n == 0:
-                bin_n = "00"
-            elif n == 1:
-                bin_n = "01"
-            else:
-                bin_n = bin(n)[-2:]
-            if m == 0:
-                bin_m = "00"
-            elif m == 1:
-                bin_m = "01"
-            else:
-                bin_m = bin(m)[-2:]
-
-            combi.append(bin_n + bin_m)
-    qubit_states = [BaseQubitState(b).to_state() for b in combi]
+            combi.append(f"{n}" + f"{m}")
+    qubit_states = [BaseQuditState(b).to_state() for b in combi]
 
     beam_splitter = sum((
         outer_product(fock_state, qubit_state)
@@ -198,7 +200,7 @@ def construct_beam_splitter(num_photons_a, num_photons_b):
 def calculate_povm(clicks_left, clicks_right):
     """Functions that calculate the effective POVM elements for (n, m) clicks (left, right) respectively.
 
-    Note currently only working up to 3 incoming photons from each side
+    Note currently only working up to 9 incoming photons from each side, then qudit numbering fails.
 
     Parameters
     ----------
@@ -223,21 +225,8 @@ def calculate_povm(clicks_left, clicks_right):
     combi = []
     for n in range(incoming_photons + 1):
         for m in range(incoming_photons + 1):
-            if n == 0:
-                bin_n = "00"
-            elif n == 1:
-                bin_n = "01"
-            else:
-                bin_n = bin(n)[-2:]
-            if m == 0:
-                bin_m = "00"
-            elif m == 1:
-                bin_m = "01"
-            else:
-                bin_m = bin(m)[-2:]
-
-            combi.append(bin_n + bin_m)
-    states = [BaseQubitState(b).to_state() for b in combi]
+            combi.append(f"{n}" + f"{m}")
+    states = [BaseQuditState(b).to_state() for b in combi]
     # states = [BaseQubitState("".join(binary)).to_state() for binary in product(["0", "1"], repeat=2)]
     # TODO: all POVMs have same entries :D
     print("M_{}{}".format(clicks_left, clicks_right))
