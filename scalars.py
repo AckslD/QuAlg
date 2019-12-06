@@ -134,6 +134,7 @@ class DeltaFunction(Scalar):
     def __init__(self, var1, var2):
         assert_str(var1)
         assert_str(var2)
+        self._assert_different(var1, var2)
         self._vars = [var1, var2]
 
     def conjugate(self):
@@ -152,6 +153,7 @@ class DeltaFunction(Scalar):
         if old_variable in new_vars:
             new_vars.remove(old_variable)
             new_vars.append(new_variable)
+        self._assert_different(*new_vars)
         return self.__class__(*new_vars)
 
     def get_variables(self):
@@ -168,6 +170,11 @@ class DeltaFunction(Scalar):
 
     def _key(self):
         return frozenset(self._vars)
+
+    @staticmethod
+    def _assert_different(var1, var2):
+        if var1 == var2:
+            raise ValueError(f"Variables in a delta function needs to be different, not {var1} and {var2}")
 
 
 class ProductOfScalars(Scalar):
