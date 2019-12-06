@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from scalars import Scalar, is_scalar
 from states import BaseState, State
-from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables
+from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
 
 
 class BaseOperator:
@@ -143,6 +143,8 @@ class Operator:
             for other_base_op, other_scalar in operator._terms.items():
                 new_base_op = BaseOperator(self_base_op._left, other_base_op._right)
                 new_scalar = self_base_op._right.inner_product(other_base_op._left) * self_scalar * other_scalar
+                if is_zero(new_scalar):
+                    continue
                 new_op._terms[new_base_op] += new_scalar
 
         return new_op
