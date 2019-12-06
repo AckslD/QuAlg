@@ -441,7 +441,10 @@ class SumOfScalars(Scalar):
 
     def simplify(self, full=True):
         new_scalar = 0
-        for term in self.expand():
+        expanded = self.expand()
+        if is_number(expanded):
+            return expanded
+        for term in expanded:
             if not is_zero(term):
                 new_scalar += simplify(term)
 
