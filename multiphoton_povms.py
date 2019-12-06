@@ -75,11 +75,10 @@ def construct_fock_state(num_mode_a, num_mode_b):
         b_n @= psi * State(base_states=[BaseFockState([FockOp("c", f"w{i}")]),
                                         BaseFockState([FockOp("d", f"w{i}")])], scalars=[1, -1])
 
-    # TODO : add normalization again and implement unittest
-    norm = 1/np.sqrt(2**(num_mode_a+num_mode_b) * math.factorial(num_mode_a) * math.factorial(num_mode_b))
+    norm = float(1/np.sqrt(2**(num_mode_a+num_mode_b) * math.factorial(num_mode_a) * math.factorial(num_mode_b)))
 
-    state_nm = a_n@b_n
-    state_nm = simplify(state_nm) * norm
+    state_nm = simplify(a_n@b_n)
+    state_nm = norm * state_nm
     # print("state |{},{}> = {}".format(num_mode_a, num_mode_b, simplify(state_nm)))
 
     # check length
@@ -148,10 +147,9 @@ def construct_projector(num_left, num_right):
     for i in range(num_left, num_left+num_right):
         state @= BaseFockState([FockOp("d", f"w{i+1}")]).to_state()
     # state = simplify(state)
-    norm = 1/np.sqrt(math.factorial(num_left) * math.factorial(num_right))
-    state = state * norm
+    norm = float(1/np.sqrt(math.factorial(num_left) * math.factorial(num_right)))
+    state = norm * state
     p_i_j = outer_product(state, state)
-    print(f"proj {repr(p_i_j)}")
     return p_i_j
 
 
