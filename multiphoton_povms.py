@@ -6,8 +6,9 @@ from itertools import product
 import time
 
 
-from scalars import SingleVarFunctionScalar
-from q_state import BaseQubitState
+from scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars, \
+    is_number
+from q_state import BaseQuditState
 from states import State
 from fock_state import BaseFockState, FockOp, FockOpProduct
 from operators import Operator, outer_product
@@ -170,6 +171,10 @@ def construct_beam_splitter(num_photons_a, num_photons_b):
         Unitary describing the action of the beam splitter.
 
     """
+    # TODO: do we really want different numbers from left and right?
+    if num_photons_a != num_photons_b:
+        print("Beam Splitter Unitary not symmertric.")
+
     fock_states, _ = generate_fock_states(num_photons_a, num_photons_b)
     # replace variables
     for i, state in enumerate(fock_states):
@@ -187,7 +192,7 @@ def construct_beam_splitter(num_photons_a, num_photons_b):
     for n in range(num_photons_a + 1):
         for m in range(num_photons_b + 1):
             combi.append(f"{n}" + f"{m}")
-    qubit_states = [BaseQuditState(b).to_state() for b in combi]
+    qubit_states = [BaseQuditState(b, base=num_photons_a + 1).to_state() for b in combi]
 
     beam_splitter = sum((
         outer_product(fock_state, qubit_state)
@@ -224,20 +229,21 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     p = construct_projector(clicks_left, clicks_right)
     m = u.dagger() * p * replace_var(u)
     m = simplify(m)
-    print(m)
+    # print(m)
     # generate possible states
     combi = []
     for j in range(incoming_photons + 1):
         for k in range(incoming_photons + 1):
             combi.append(f"{j}" + f"{k}")
-    states = [BaseQuditState(b).to_state() for b in combi]
+    states = [BaseQuditState(b, base=incoming_photons + 1).to_state() for b in combi]
     print("M_{}{}".format(clicks_left, clicks_right))
     # output individual matrix elements
-    for sl, sr in product(states, repeat=2):
-        inner = (m * sr).inner_product(sl)
+    '''for sl, sr in product(states, repeat=2):
+        inner = simplify(m * sr)
+        inner = inner.inner_product(sl)
         bsl = next(iter(sl))[0]
         bsr = next(iter(sr))[0]
-        print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")
+        print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")'''
 
     return m
 
@@ -272,26 +278,19 @@ def generate_effective_povms(incoming_left, incoming_right):
     return operators
 
 
-'''def to_2d_array(operator, photon_number):
-    """Function converting the operator to a 2D numpy array.
+def convert_scalars(scalar):
+    visibility = 0.9
 
-    Parameters
-    ----------
-    operator : instance of :class:'operators.Operator'
-        Operator to convert into array.
-    photon_number : int
-        photon number
-
-    """
-    if len(shape) > 2:
-        raise ValueError(f"Shape of the 2d array should have only 2 elements not {len(shape)}.")
-    # sort terms by left entry
-    d = defaultdict(list)
-    for item in self._terms.keys():
-        # this should be a dict with all every entry having the same left
-        d[item._left].append(self._terms[item])
-    # now we just need to combine the entries to an array
-    return np.array(d.values())'''
+    scalar = integrate(scalar)
+    if is_number(scalar):
+        return scalar
+    for sequenced_class in [ProductOfScalars, SumOfScalars]:
+        if isinstance(scalar, sequenced_class):
+            return simplify(sequenced_class([convert_scalars(s) for s in scalar]))
+    if isinstance(scalar, InnerProductFunction):
+        if set([scalar._func_name1, scalar._func_name2]) == set(['phi', 'psi']):
+            return visibility
+    raise RuntimeError(f"unknown scalar {scalar} of type {type(scalar)}")
 
 
 if __name__ == '__main__':
@@ -308,7 +307,9 @@ if __name__ == '__main__':
     print("P_{}_{}: {}".format(2, 4, p_dict[(2, 4)]))
     construct_beam_splitter(num, num)'''
     start_time = time.time()
-    m = calculate_povm(0, 0, 1)
+    m = calculate_povm(2, 2, 3)
     print("elapsed time:", time.time() - start_time)
-    print(to_2d_array(m, (16, 16)))
+    gen_time = time.time()
+    print(m.to_numpy_matrix(convert_scalars))
+    print(f"conversion took {time.time()-gen_time}")
 

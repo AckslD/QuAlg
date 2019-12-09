@@ -65,7 +65,7 @@ class TestMultiPhoton(unittest.TestCase):
         sum = Operator()
         for op in povm_ops:
             sum += op
-        print(simplify(integrate(sum)))
+        print(sum)
 
 
 if __name__ == "__main__":
