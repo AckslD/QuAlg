@@ -2,7 +2,8 @@ import numpy as np
 from itertools import product
 from timeit import default_timer as timer
 
-from scalars import SingleVarFunctionScalar
+from scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars,\
+    is_number
 from q_state import BaseQubitState
 from fock_state import BaseFockState, FockOp
 from operators import Operator, outer_product
@@ -87,6 +88,20 @@ def example_projectors():
 
 
 def ultimate_example(indices):
+    def convert_scalars(scalar):
+        visibility = 0.9
+
+        scalar = integrate(scalar)
+        if is_number(scalar):
+            return scalar
+        for sequenced_class in [ProductOfScalars, SumOfScalars]:
+            if isinstance(scalar, sequenced_class):
+                return simplify(sequenced_class([convert_scalars(s) for s in scalar]))
+        if isinstance(scalar, InnerProductFunction):
+            if set([scalar._func_name1, scalar._func_name2]) == set(['phi', 'psi']):
+                return visibility
+        raise RuntimeError(f"unknown scalar {scalar} of type {type(scalar)}")
+
     assert len(indices) == 2
 
     u = construct_beam_splitter()
@@ -94,15 +109,15 @@ def ultimate_example(indices):
     m = u.dagger() * p * replace_var(u)
     m = simplify(m)
     # print(m)
+    print(m.to_numpy_matrix(convert_scalars))
 
-    states = [BaseQubitState("".join(binary)).to_state() for binary in product(["0", "1"], repeat=2)]
-    print("M_{}{}".format(*indices))
-    for sl, sr in product(states, repeat=2):
-        inner = (m * sr).inner_product(sl)
-        bsl = next(iter(sl))[0]
-        bsr = next(iter(sr))[0]
-        print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")
-    return
+    # states = [BaseQubitState("".join(binary)).to_state() for binary in product(["0", "1"], repeat=2)]
+    # print("M_{}{}".format(*indices))
+    # for sl, sr in product(states, repeat=2):
+    #     inner = (m * sr).inner_product(sl)
+    #     bsl = next(iter(sl))[0]
+    #     bsr = next(iter(sr))[0]
+    #     print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")
 
 
 def example_states():
@@ -132,7 +147,7 @@ def main():
     # example_beam_splitter()
     # construct_projector(0, 0)
     # example_projectors()
-    ultimate_example((1, 1))
+    ultimate_example((1, 0))
     t2 = timer()
     print(f"\nTime: {t2 - t1}")
 

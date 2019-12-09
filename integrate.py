@@ -87,7 +87,12 @@ def integrate(scalar, variable=None):
                 var_factors.append(factor)
             else:
                 other_factors.append(factor)
-        new_scalar = ProductOfScalars(other_factors + [_Integration(ProductOfScalars(var_factors), variable)])
+        if len(var_factors) > 0:
+            integration_part = [_Integration(ProductOfScalars(var_factors), variable)] 
+        else:
+            integration_part = []
+
+        new_scalar = ProductOfScalars(other_factors + integration_part)
     elif is_number(scalar):
         new_scalar = scalar
     else:
@@ -112,9 +117,9 @@ def _evaluate_delta_function(integration_scalar):
     except StopIteration:
         # TODO This should not happen anymore
         raise RuntimeError(f"Encountered delta function with the same variable: {delta}")
-    integrand = replace_var(integrand, old_variable=variable, new_variable=other_var)
     # Replace the delta function with 1 (recall that replace_var creates a copy)
     integrand._factors[i] = 1
+    integrand = replace_var(integrand, old_variable=variable, new_variable=other_var)
 
     return integrand
 
