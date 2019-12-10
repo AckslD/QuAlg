@@ -115,17 +115,16 @@ class InnerProductFunction(Scalar):
     def __init__(self, func_name1, func_name2):
         assert_str(func_name1)
         assert_str(func_name2)
-        self._func_name1 = func_name1
-        self._func_name2 = func_name2
+        self._func_names = sorted([func_name1, func_name2])
 
     def __str__(self):
-        return f"<{self._func_name1}|{self._func_name2}>"
+        return f"<{self._func_names[0]}|{self._func_names[1]}>"
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self._func_name1)}, {repr(self._func_name2)})"
+        return f"{self.__class__.__name__}({repr(self._func_names[0])}, {repr(self._func_names[0])})"
 
     def conjugate(self):
-        return self.__class__(self._func_name1, self._func_name2)
+        return self.__class__(self._func_names[0], self._func_names[0])
 
     def is_zero(self):
         return False
@@ -134,7 +133,7 @@ class InnerProductFunction(Scalar):
         return False
 
     def _key(self):
-        return (self._func_name1, self._func_name2)
+        return tuple(self._func_names)
 
 
 class DeltaFunction(Scalar):
