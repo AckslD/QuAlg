@@ -1,11 +1,17 @@
 import unittest
 import time
 from itertools import product
+import numpy as np
+import pickle
 
-from multiphoton_povms import generate_fock_states, construct_fock_state, construct_projector, generate_effective_povms
+from netsquid_ae.qdetector_multi import set_operators
+
+from multiphoton_povms import generate_fock_states, construct_fock_state, construct_projector, generate_effective_povms,\
+    convert_scalars
 from integrate import integrate
 from toolbox import simplify
 from operators import Operator
+from scalars import SumOfScalars
 
 
 class TestMultiPhoton(unittest.TestCase):
@@ -13,7 +19,7 @@ class TestMultiPhoton(unittest.TestCase):
 
     def test_state_generation(self):
         """Test the correct generation of Fock states."""
-        n = 2
+        n = 3
         states, states_dict = generate_fock_states(n, n)
 
         for name in states_dict:
@@ -21,19 +27,26 @@ class TestMultiPhoton(unittest.TestCase):
             start_time = time.time()
 
             inner_prod = state.inner_product(state)
+            print(inner_prod, )
             ip = simplify(inner_prod)
+            print("INNER simplified:", type(ip))
+            ip = simplify(ip)
+            print("INNER simplified twice:", type(ip))
+            if isinstance(ip, SumOfScalars):
+                print(ip._terms)
             norm = integrate(ip)
 
             elapsed_time = time.time() - start_time
 
             print(f"{name} has length {len(state)}.")
-            print(f"|{name}> has norm:", simplify(norm))
+            print(f"|{name}> has norm:", simplify(norm), type(norm))
             print(f"Norm took {elapsed_time}s to calculate")
+            print(state)
 
             # currently only works for phi_i = phi_j m psi_i = psi_j
             self.assertAlmostEqual(norm, 1)
 
-    def test_projectors(self):
+    '''def test_projectors(self):
         """Tests that projectors project on correct state."""
         k = 2
         lst = range(k+1)
@@ -55,17 +68,54 @@ class TestMultiPhoton(unittest.TestCase):
                     pass
                 else:
                     # self.assertAlmostEqual(norm, 0)
-                    pass
+                    pass'''
 
     def test_povms(self):
         """Tests the correct generation of POVM operators."""
-        n = 1
-        povm_ops = generate_effective_povms(n, n)
-        print("done generating")
-        sum = Operator()
-        for op in povm_ops:
-            sum += op
-        print(sum)
+        # n =2
+        # povm_ops = generate_effective_povms(n, n)
+
+        # Note: this is a pickle containing the generated and converted povm arrays for up to 2 photons from each side
+        # with visibility = 1.
+        # generating the operators took:    456.10833168029785 s
+        # converting to arrays took:        2519.8453447818756 s  (factor 5.5 longer)
+        with open('multiphoton_povms_arrays_2_2_2.pkl', "rb") as file:
+            arrays = pickle.load(file)
+        sum = np.zeros(shape=(9, 9))
+        for mat in arrays:
+            sum += mat
+
+        id = np.identity(9)
+        self.assertTrue(np.testing.assert_array_almost_equal(sum, id) is None)
+
+    def test_against_old_povms(self):
+        """Test if POVMs agree with the old ones for visibility = 1."""
+        # Note: This is a pickle containing the generated and converted POVMs for up to 3 photons from each side for
+        # visibility (NOT the complete set of POVMs just up to 3 photons after the BS.
+        with open('multiphoton_povms_arrays_2.pkl', "rb") as file:
+            arrays = pickle.load(file)
+        # TODO: extend to full set of POVMs
+        kraus_ops, kraus_ops_num_res, outcome_dict = set_operators()
+
+        def generate_dict(total_photon_number, list):
+            key = []
+            dict = {}
+            for n in range(total_photon_number + 1):
+                for m in range(total_photon_number + 1):
+                    if n + m <= total_photon_number:
+                        key.append((n, m))
+            for i in range(len(list)):
+                dict[key[i]] = list[i]
+            return dict
+
+        array_dict = generate_dict(3, arrays)
+        kraus_dict = generate_dict(6, kraus_ops_num_res)
+
+        for key in array_dict.keys():
+            # old POVMs seem to have reverse numbering
+            (n, m) = key
+            rev_key = (m, n)
+            self.assertTrue(np.testing.assert_array_almost_equal(array_dict[key], kraus_dict[rev_key].arr.real) is None)
 
 
 if __name__ == "__main__":

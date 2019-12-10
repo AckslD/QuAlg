@@ -4,6 +4,7 @@ import numpy as np
 import math
 from itertools import product
 import time
+import pickle
 
 
 from scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars, \
@@ -148,6 +149,17 @@ def construct_projector(num_left, num_right):
         state @= BaseFockState([FockOp("c", f"w{i+1}")]).to_state()
     for i in range(num_left, num_left+num_right):
         state @= BaseFockState([FockOp("d", f"w{i+1}")]).to_state()
+
+    # replace variables
+    num_vars = len(state.get_variables())
+    w_j = []
+    p_j = []
+    for j in range(num_vars):
+        w_j.append(f"w{j+1}")
+        p_j.append(f"p{j+1}")
+    for old, new in zip(w_j, p_j):
+        state = replace_var(state, old, new)
+
     # state = simplify(state)
     norm = float(1/np.sqrt(math.factorial(num_left) * math.factorial(num_right)))
     state = norm * state
@@ -227,10 +239,12 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
 
     u = construct_beam_splitter(incoming_photons, incoming_photons)
     p = construct_projector(clicks_left, clicks_right)
-    m = u.dagger() * p * replace_var(u)
+    m = u.dagger() * p
+    m = simplify(m)
+    m = m * replace_var(u)
     m = simplify(m)
     # print(m)
-    # generate possible states
+    '''# generate possible states
     combi = []
     for j in range(incoming_photons + 1):
         for k in range(incoming_photons + 1):
@@ -238,7 +252,7 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     states = [BaseQuditState(b, base=incoming_photons + 1).to_state() for b in combi]
     print("M_{}{}".format(clicks_left, clicks_right))
     # output individual matrix elements
-    '''for sl, sr in product(states, repeat=2):
+    for sl, sr in product(states, repeat=2):
         inner = simplify(m * sr)
         inner = inner.inner_product(sl)
         bsl = next(iter(sl))[0]
@@ -273,13 +287,16 @@ def generate_effective_povms(incoming_left, incoming_right):
     for n in range(total_photon_number + 1):
         for m in range(total_photon_number + 1):
             if n + m <= total_photon_number:
+                start_time = time.time()
+                print(f"Generating M_{n}_{m}")
                 operators.append(calculate_povm(n, m, max(incoming_left, incoming_right)))
+                print(f"Generating M_{n}_{m} took {time.time() - start_time}")
 
     return operators
 
 
 def convert_scalars(scalar):
-    visibility = 0.9
+    visibility = 1
 
     scalar = integrate(scalar)
     if is_number(scalar):
@@ -296,7 +313,6 @@ def convert_scalars(scalar):
 if __name__ == '__main__':
     # import operators with visibility=1 as a test
     kraus_ops, kraus_ops_num_res, outcome_dict = set_operators()
-
     num = 3
 
     '''s, s_dict = generate_fock_states(num, num)
@@ -307,9 +323,17 @@ if __name__ == '__main__':
     print("P_{}_{}: {}".format(2, 4, p_dict[(2, 4)]))
     construct_beam_splitter(num, num)'''
     start_time = time.time()
-    m = calculate_povm(2, 2, 3)
+    # m = calculate_povm(0, 0, 3)
+    povms = generate_effective_povms(3, 3)
+    with open('multiphoton_povms_raw_2_2_2.pkl', 'wb') as output:
+        pickle.dump(povms, output, pickle.HIGHEST_PROTOCOL)
     print("elapsed time:", time.time() - start_time)
     gen_time = time.time()
-    print(m.to_numpy_matrix(convert_scalars))
+    #print(povms.to_numpy_matrix(convert_scalars))
+    arrays = []
+    for p in povms:
+        arrays.append(p.to_numpy_matrix(convert_scalars))
     print(f"conversion took {time.time()-gen_time}")
+    with open('multiphoton_povms_arrays_2_2_2.pkl', 'wb') as output:
+        pickle.dump(arrays, output, pickle.HIGHEST_PROTOCOL)
 
