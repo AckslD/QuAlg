@@ -1,4 +1,4 @@
-from netsquid_ae.qdetector_multi import set_operators
+# from netsquid_ae.qdetector_multi import set_operators
 
 import numpy as np
 import math
@@ -13,7 +13,7 @@ from q_state import BaseQuditState
 from states import State
 from fock_state import BaseFockState, FockOp, FockOpProduct
 from operators import Operator, outer_product
-from toolbox import simplify, replace_var
+from toolbox import simplify, replace_var, get_variables
 from integrate import integrate
 
 
@@ -241,6 +241,11 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     p = construct_projector(clicks_left, clicks_right)
     m = u.dagger() * p
     m = simplify(m)
+    for base_op, scalar in m._terms.items():
+        scalar_variabels = get_variables(scalar) - get_variables(base_op)
+        m._terms[base_op] = integrate(scalar, scalar_variabels)
+    # import pdb
+    # pdb.set_trace()
     m = m * replace_var(u)
     m = simplify(m)
     # print(m)
@@ -298,6 +303,8 @@ def generate_effective_povms(incoming_left, incoming_right):
 def convert_scalars(scalar):
     visibility = 1
 
+    # import pdb
+    # pdb.set_trace()
     scalar = integrate(scalar)
     if is_number(scalar):
         return scalar
@@ -312,7 +319,7 @@ def convert_scalars(scalar):
 
 if __name__ == '__main__':
     # import operators with visibility=1 as a test
-    kraus_ops, kraus_ops_num_res, outcome_dict = set_operators()
+    # kraus_ops, kraus_ops_num_res, outcome_dict = set_operators()
     num = 3
 
     '''s, s_dict = generate_fock_states(num, num)
@@ -322,6 +329,17 @@ if __name__ == '__main__':
     print(len(s))
     print("P_{}_{}: {}".format(2, 4, p_dict[(2, 4)]))
     construct_beam_splitter(num, num)'''
+
+    start_time = time.time()
+    n, m, tot = 0, 3, 3
+    print(f"Generating M_{n}_{m}")
+    povm = calculate_povm(n, m, tot)
+    middle_time = time.time()
+    povm.to_numpy_matrix(convert_scalars)
+    end_time = time.time()
+    print(f"Time elapsed {end_time - start_time} (middle {middle_time - start_time})")
+    exit()
+
     start_time = time.time()
     # m = calculate_povm(0, 0, 3)
     povms = generate_effective_povms(3, 3)

@@ -3,7 +3,8 @@ from copy import copy
 from collections import defaultdict
 from itertools import product
 
-from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one, get_variables
+from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one, get_variables,\
+    has_variable
 
 
 def is_number(n):
@@ -333,7 +334,7 @@ class ProductOfScalars(Scalar):
         return False
 
     def has_variable(self, variable):
-        return any(factor.has_variable(variable) for factor in self)
+        return any(has_variable(factor, variable) for factor in self)
 
     def _key(self):
         factors_with_multi = defaultdict(int)
@@ -485,7 +486,7 @@ class SumOfScalars(Scalar):
         return False
 
     def has_variable(self, variable):
-        return any(factor.has_variable(variable) for factor in self)
+        return any(has_variable(factor, variable) for factor in self)
 
     def _key(self):
         terms_with_multi = defaultdict(int)
@@ -504,6 +505,9 @@ def _get_multiple_of_scalar(scalar):
         if len(scalar._factors) == 2:
             return tuple(scalar._factors)
         else:
+            # num_factor = scalar._factors[0]
+            # scalar._factors[0] = 1
+            # return num_factor, scalar
             return scalar._factors[0], ProductOfScalars(scalar._factors[1:])
     return 1, scalar
 
