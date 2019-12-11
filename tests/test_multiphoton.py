@@ -10,8 +10,6 @@ from multiphoton_povms import generate_fock_states, construct_fock_state, constr
     convert_scalars
 from integrate import integrate
 from toolbox import simplify
-from operators import Operator
-from scalars import SumOfScalars
 
 
 class TestMultiPhoton(unittest.TestCase):
@@ -19,29 +17,25 @@ class TestMultiPhoton(unittest.TestCase):
 
     def test_state_generation(self):
         """Test the correct generation of Fock states."""
-        n = 3
+        n = 2
         states, states_dict = generate_fock_states(n, n)
 
         for name in states_dict:
             state = states_dict[name]
+            print(f"{name} has length {len(state)}.")
             start_time = time.time()
 
             inner_prod = state.inner_product(state)
-            print(inner_prod, )
+            print("inner took:", time.time() - start_time)
             ip = simplify(inner_prod)
-            print("INNER simplified:", type(ip))
             ip = simplify(ip)
-            print("INNER simplified twice:", type(ip))
-            if isinstance(ip, SumOfScalars):
-                print(ip._terms)
+
             norm = integrate(ip)
 
             elapsed_time = time.time() - start_time
 
-            print(f"{name} has length {len(state)}.")
-            print(f"|{name}> has norm:", simplify(norm), type(norm))
+            print(f"|{name}> has norm:", norm, type(norm))
             print(f"Norm took {elapsed_time}s to calculate")
-            print(state)
 
             # currently only works for phi_i = phi_j m psi_i = psi_j
             self.assertAlmostEqual(norm, 1)
@@ -72,7 +66,7 @@ class TestMultiPhoton(unittest.TestCase):
 
     def test_povms(self):
         """Tests the correct generation of POVM operators."""
-        # n =2
+        # n = 2
         # povm_ops = generate_effective_povms(n, n)
 
         # Note: this is a pickle containing the generated and converted povm arrays for up to 2 photons from each side

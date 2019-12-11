@@ -88,9 +88,9 @@ def construct_fock_state(num_mode_a, num_mode_b):
     if len(state_nm) != 2**(num_mode_a+num_mode_b):
         raise ValueError("State has the wrong length.")
 
-    state = simplify(state_nm)
+    #state = simplify(state_nm)
 
-    return state
+    return state_nm
 
 
 def generate_projectors(max_number_photons):
@@ -242,13 +242,14 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     m = u.dagger() * p
     m = simplify(m)
     for base_op, scalar in m._terms.items():
-        scalar_variabels = get_variables(scalar) - get_variables(base_op)
-        m._terms[base_op] = integrate(scalar, scalar_variabels)
+        scalar_variables = get_variables(scalar) - get_variables(base_op)
+        m._terms[base_op] = integrate(scalar, scalar_variables)
     # import pdb
     # pdb.set_trace()
     m = m * replace_var(u)
-    m = simplify(m)
-    # print(m)
+    for base_op, scalar in m._terms.items():
+        scalar_variables = get_variables(scalar) - get_variables(base_op)
+        m._terms[base_op] = integrate(scalar, scalar_variables)
     '''# generate possible states
     combi = []
     for j in range(incoming_photons + 1):
@@ -264,7 +265,7 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
         bsr = next(iter(sr))[0]
         print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")'''
 
-    return m
+    return simplify(m)
 
 
 def generate_effective_povms(incoming_left, incoming_right):
@@ -312,7 +313,7 @@ def convert_scalars(scalar):
         if isinstance(scalar, sequenced_class):
             return simplify(sequenced_class([convert_scalars(s) for s in scalar]))
     if isinstance(scalar, InnerProductFunction):
-        if set([scalar._func_name1, scalar._func_name2]) == set(['phi', 'psi']):
+        if set(scalar._func_names) == set(['phi', 'psi']):
             return visibility
     raise RuntimeError(f"unknown scalar {scalar} of type {type(scalar)}")
 
@@ -331,27 +332,29 @@ if __name__ == '__main__':
     construct_beam_splitter(num, num)'''
 
     start_time = time.time()
-    n, m, tot = 0, 3, 3
+    n, m, tot = 0, 4, 3
     print(f"Generating M_{n}_{m}")
     povm = calculate_povm(n, m, tot)
     middle_time = time.time()
-    povm.to_numpy_matrix(convert_scalars)
+    array = povm.to_numpy_matrix(convert_scalars)
     end_time = time.time()
+    print(povm)
+    print(array)
     print(f"Time elapsed {end_time - start_time} (middle {middle_time - start_time})")
     exit()
 
     start_time = time.time()
     # m = calculate_povm(0, 0, 3)
     povms = generate_effective_povms(3, 3)
-    with open('multiphoton_povms_raw_2_2_2.pkl', 'wb') as output:
+    with open('multiphoton_povms_raw_full.pkl', 'wb') as output:
         pickle.dump(povms, output, pickle.HIGHEST_PROTOCOL)
     print("elapsed time:", time.time() - start_time)
     gen_time = time.time()
-    #print(povms.to_numpy_matrix(convert_scalars))
+    # print(povms.to_numpy_matrix(convert_scalars))
     arrays = []
     for p in povms:
         arrays.append(p.to_numpy_matrix(convert_scalars))
     print(f"conversion took {time.time()-gen_time}")
-    with open('multiphoton_povms_arrays_2_2_2.pkl', 'wb') as output:
+    with open('multiphoton_povms_arrays_full.pkl', 'wb') as output:
         pickle.dump(arrays, output, pickle.HIGHEST_PROTOCOL)
 

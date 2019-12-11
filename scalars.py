@@ -2,6 +2,7 @@ import abc
 from copy import copy
 from collections import defaultdict
 from itertools import product
+import math
 
 from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one, get_variables,\
     has_variable
@@ -283,6 +284,9 @@ class ProductOfScalars(Scalar):
         return SumOfScalars([ProductOfScalars(term) for term in product(*expandable_factors)])
 
     def is_zero(self):
+        for f in self._factors:
+            if isinstance(f, float):
+                return math.isclose(f, 0, abs_tol=1e-16)
         return any(is_zero(s) for s in self._factors)
 
     def is_one(self):
