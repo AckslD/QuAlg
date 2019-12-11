@@ -5,6 +5,8 @@ from scalars import Scalar, is_scalar, is_number
 from states import BaseState, State
 from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
 
+from integrate import integrate
+
 
 class BaseOperator:
     def __init__(self, left, right):
@@ -153,6 +155,11 @@ class Operator:
             for other_base_op, other_scalar in operator._terms.items():
                 new_base_op = BaseOperator(self_base_op._left, other_base_op._right)
                 new_scalar = self_base_op._right.inner_product(other_base_op._left) * self_scalar * other_scalar
+
+                # TODO
+                scalar_variabels = get_variables(new_scalar) - get_variables(new_base_op)
+                new_scalar = integrate(new_scalar, scalar_variabels)
+
                 if is_zero(new_scalar):
                     continue
                 new_op._terms[new_base_op] += new_scalar
