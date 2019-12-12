@@ -2,9 +2,9 @@
 
 import numpy as np
 import math
-from itertools import product
 import time
 import pickle
+import multiprocessing
 
 
 from scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars, \
@@ -237,16 +237,21 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     # TODO: fix this parameter
     incoming_photons = max_num_photons_per_side
 
+    start_time = time.time()
+    print(f"Generating M_{clicks_left}_{clicks_right}")
+
     u = construct_beam_splitter(incoming_photons, incoming_photons)
     p = construct_projector(clicks_left, clicks_right)
+    # lmul unitary and projector
     m = u.dagger() * p
     m = simplify(m)
+    # simplify
     for base_op, scalar in m._terms.items():
         scalar_variables = get_variables(scalar) - get_variables(base_op)
         m._terms[base_op] = integrate(scalar, scalar_variables)
-    # import pdb
-    # pdb.set_trace()
+    # rmul unitary
     m = m * replace_var(u)
+    # simplify
     for base_op, scalar in m._terms.items():
         scalar_variables = get_variables(scalar) - get_variables(base_op)
         m._terms[base_op] = integrate(scalar, scalar_variables)
@@ -265,7 +270,14 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
         bsr = next(iter(sr))[0]
         print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")'''
 
+    print(f"Generating M_{clicks_left}_{clicks_right} took {time.time() - start_time}")
+
     return simplify(m)
+
+
+def wrap_povm(left, right, tot):
+    """Short wrapper to return tuple of (parameters, result) in multiprocessing."""
+    return (left, right), calculate_povm(left, right, tot)
 
 
 def generate_effective_povms(incoming_left, incoming_right):
@@ -284,28 +296,29 @@ def generate_effective_povms(incoming_left, incoming_right):
 
     Returns
     -------
-    operators : list of operators (:class:'operators.Operator')
-        List of all possible POVM operators for the given number of incoming photons.
+    operators : dict of operators (:class:'operators.Operator') and tuples as keys
+        Dictionary of all possible POVM operators for the given number of incoming photons.
 
     """
     total_photon_number = incoming_left + incoming_right
-    operators = []
+    operators = {}
+    arguments = []
     for n in range(total_photon_number + 1):
         for m in range(total_photon_number + 1):
             if n + m <= total_photon_number:
-                start_time = time.time()
-                print(f"Generating M_{n}_{m}")
-                operators.append(calculate_povm(n, m, max(incoming_left, incoming_right)))
-                print(f"Generating M_{n}_{m} took {time.time() - start_time}")
+                arguments.append((n, m, max(incoming_left, incoming_right)))
+
+    with multiprocessing.Pool() as pool:
+        results = pool.starmap_async(wrap_povm, arguments)
+        for op in results.get():
+            operators[op[0]] = op[1]
 
     return operators
 
 
 def convert_scalars(scalar):
-    visibility = 1
+    visibility = 0.9
 
-    # import pdb
-    # pdb.set_trace()
     scalar = integrate(scalar)
     if is_number(scalar):
         return scalar
@@ -331,7 +344,7 @@ if __name__ == '__main__':
     print("P_{}_{}: {}".format(2, 4, p_dict[(2, 4)]))
     construct_beam_splitter(num, num)'''
 
-    start_time = time.time()
+    '''start_time = time.time()
     n, m, tot = 0, 4, 3
     print(f"Generating M_{n}_{m}")
     povm = calculate_povm(n, m, tot)
@@ -341,14 +354,16 @@ if __name__ == '__main__':
     print(povm)
     print(array)
     print(f"Time elapsed {end_time - start_time} (middle {middle_time - start_time})")
-    exit()
+    exit()'''
 
     start_time = time.time()
     # m = calculate_povm(0, 0, 3)
     povms = generate_effective_povms(3, 3)
+    print(f"Time elapsed {time.time() - start_time}")
     with open('multiphoton_povms_raw_full.pkl', 'wb') as output:
         pickle.dump(povms, output, pickle.HIGHEST_PROTOCOL)
-    print("elapsed time:", time.time() - start_time)
+    exit()
+    '''print("elapsed time:", time.time() - start_time)
     gen_time = time.time()
     # print(povms.to_numpy_matrix(convert_scalars))
     arrays = []
@@ -356,5 +371,5 @@ if __name__ == '__main__':
         arrays.append(p.to_numpy_matrix(convert_scalars))
     print(f"conversion took {time.time()-gen_time}")
     with open('multiphoton_povms_arrays_full.pkl', 'wb') as output:
-        pickle.dump(arrays, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(arrays, output, pickle.HIGHEST_PROTOCOL)'''
 
