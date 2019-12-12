@@ -280,7 +280,7 @@ def wrap_povm(left, right, tot):
     return (left, right), calculate_povm(left, right, tot)
 
 
-def generate_effective_povms(incoming_left, incoming_right):
+def generate_effective_povms(incoming_left, incoming_right, subset=None):
     """Function that generates all possible POVM operators for arbitrary number of incoming photons from the left
     and the right.
 
@@ -293,6 +293,8 @@ def generate_effective_povms(incoming_left, incoming_right):
         Maximum number of incoming photons from the left.
     incoming_right : int
         Maximum number of incoming photons from the right.
+    subset : None, "leq" or "g"
+        Mode of slicing the full set of POVM into subset
 
     Returns
     -------
@@ -306,7 +308,16 @@ def generate_effective_povms(incoming_left, incoming_right):
     for n in range(total_photon_number + 1):
         for m in range(total_photon_number + 1):
             if n + m <= total_photon_number:
-                arguments.append((n, m, max(incoming_left, incoming_right)))
+                if subset == "leq":
+                    if n <= m:
+                        arguments.append((n, m, max(incoming_left, incoming_right)))
+                elif subset == "g":
+                    if n > m:
+                        arguments.append((n, m, max(incoming_left, incoming_right)))
+                elif subset is None:
+                    arguments.append((n, m, max(incoming_left, incoming_right)))
+                else:
+                    raise ValueError(f"subset should be None, 'leq' or 'g' and not {subset}.")
 
     with multiprocessing.Pool() as pool:
         results = pool.starmap_async(wrap_povm, arguments)
@@ -358,9 +369,10 @@ if __name__ == '__main__':
 
     start_time = time.time()
     # m = calculate_povm(0, 0, 3)
-    povms = generate_effective_povms(3, 3)
+    subset = "g"
+    povms = generate_effective_povms(3, 3, subset=subset)
     print(f"Time elapsed {time.time() - start_time}")
-    with open('multiphoton_povms_raw_full.pkl', 'wb') as output:
+    with open(f'multiphoton_povms_raw_subset_{subset}.pkl', 'wb') as output:
         pickle.dump(povms, output, pickle.HIGHEST_PROTOCOL)
     exit()
     '''print("elapsed time:", time.time() - start_time)
