@@ -122,7 +122,7 @@ class InnerProductFunction(Scalar):
         return f"<{self._func_names[0]}|{self._func_names[1]}>"
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self._func_names[0])}, {repr(self._func_names[0])})"
+        return f"{self.__class__.__name__}({repr(self._func_names[0])}, {repr(self._func_names[1])})"
 
     def conjugate(self):
         return self.__class__(self._func_names[0], self._func_names[0])
