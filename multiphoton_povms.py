@@ -238,7 +238,7 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     incoming_photons = max_num_photons_per_side
 
     start_time = time.time()
-    print(f"Generating M_{clicks_left}_{clicks_right}")
+    print(f"Generating M_{clicks_left}_{clicks_right} ...")
 
     u = construct_beam_splitter(incoming_photons, incoming_photons)
     p = construct_projector(clicks_left, clicks_right)
@@ -251,6 +251,8 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
         m._terms[base_op] = integrate(scalar, scalar_variables)
     # rmul unitary
     m = m * replace_var(u)
+    mid_time = time.time()
+    print(f"Generating M_{clicks_left}_{clicks_right} took {time.time() - start_time}.")
     # simplify
     for base_op, scalar in m._terms.items():
         scalar_variables = get_variables(scalar) - get_variables(base_op)
@@ -270,7 +272,8 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
         bsr = next(iter(sr))[0]
         print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")'''
 
-    print(f"Generating M_{clicks_left}_{clicks_right} took {time.time() - start_time}")
+    print(f"Fully simplifying M_{clicks_left}_{clicks_right} took {time.time() - mid_time}s,"
+          f"total time: {time.time() - start_time}s.")
 
     return simplify(m)
 
@@ -298,12 +301,13 @@ def generate_effective_povms(incoming_left, incoming_right, subset=None):
 
     Returns
     -------
-    operators : dict of operators (:class:'operators.Operator') and tuples as keys
+    operators_dict : dict of operators (:class:'operators.Operator') and tuples as keys
         Dictionary of all possible POVM operators for the given number of incoming photons.
 
     """
-    total_photon_number = incoming_left + incoming_right
-    operators = {}
+    # total_photon_number = incoming_left + incoming_right
+    total_photon_number = 4
+    operators_dict = {}
     arguments = []
     for n in range(total_photon_number + 1):
         for m in range(total_photon_number + 1):
@@ -322,23 +326,36 @@ def generate_effective_povms(incoming_left, incoming_right, subset=None):
     with multiprocessing.Pool() as pool:
         results = pool.starmap_async(wrap_povm, arguments)
         for op in results.get():
-            operators[op[0]] = op[1]
+            operators_dict[op[0]] = op[1]
 
-    return operators
+    return operators_dict
 
 
-def convert_scalars(scalar):
-    visibility = 0.9
+def convert_scalars(scalar, visibility):
+    """Function passed on to `operators.to_numpy_matrix` to convert non-number scalars to numbers using a given
+    visibility.
 
+    Parameters
+    ----------
+    scalar : `scalars.Scalar`
+        Non-number scalar to be converted.
+    visibility : float
+        Photon indistinguishability / visibility to be used for conversion.
+
+    """
+    if visibility != 1:
+        print(visibility)
     scalar = integrate(scalar)
     if is_number(scalar):
         return scalar
     for sequenced_class in [ProductOfScalars, SumOfScalars]:
         if isinstance(scalar, sequenced_class):
-            return simplify(sequenced_class([convert_scalars(s) for s in scalar]))
+            return simplify(sequenced_class([convert_scalars(s, visibility) for s in scalar]))
     if isinstance(scalar, InnerProductFunction):
         if set(scalar._func_names) == set(['phi', 'psi']):
             return visibility
+        #elif set(scalar._func_names) == set(['phi', 'phi']) or set(scalar._func_names) == set(['psi', 'psi']):
+        #    return 1
     raise RuntimeError(f"unknown scalar {scalar} of type {type(scalar)}")
 
 
@@ -369,10 +386,10 @@ if __name__ == '__main__':
 
     start_time = time.time()
     # m = calculate_povm(0, 0, 3)
-    subset = "g"
+    subset = None
     povms = generate_effective_povms(3, 3, subset=subset)
     print(f"Time elapsed {time.time() - start_time}")
-    with open(f'multiphoton_povms_raw_subset_{subset}.pkl', 'wb') as output:
+    with open(f'multiphoton_povms_subset_3_3_4.pkl', 'wb') as output:
         pickle.dump(povms, output, pickle.HIGHEST_PROTOCOL)
     exit()
     '''print("elapsed time:", time.time() - start_time)
