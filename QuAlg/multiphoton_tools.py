@@ -108,7 +108,7 @@ def set_operators(visibility):
     for key in operator_dict.keys():
         # convert dict to arrays with given visibility
         array = sqrtm(operator_dict[key].to_numpy_matrix(convert_scalars, visibility))
-        kraus_operators_num_res.append(ops.Operator("n_{}{}".format(key[0], key[1]), array))
+        kraus_operators_num_res.append(ops.Operator(f"n_{key[0]}{key[1]}", array))
         outcome_dict[idx] = key
         idx += 1
         # Add up operators with same click pattern for non-number-resolving case
@@ -133,6 +133,16 @@ def set_operators(visibility):
 
 
 if __name__ == '__main__':
+    ops_dict = read_from_txt('QuAlg/full_multiphoton_povms.txt')
+    visibility = 0
+    #for key in [(0,2),(2,0)]:
+    for key in [(2, 0)]:
+        print(ops_dict[key])
+        arr = sqrtm(ops_dict[key].to_numpy_matrix(convert_scalars, visibility))
+        print(arr)
+    exit()
+
+
     with open("multiphoton_povms_raw_subset_leq.pkl", "rb") as file:
         leq_dict = pickle.load(file)
     with open("multiphoton_povms_raw_subset_g.pkl", "rb") as file2:
