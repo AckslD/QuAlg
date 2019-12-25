@@ -2,13 +2,13 @@ import numpy as np
 from itertools import product
 from timeit import default_timer as timer
 
-from scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars,\
+from QuAlg.scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars,\
     is_number
-from q_state import BaseQubitState
-from fock_state import BaseFockState, FockOp
-from operators import Operator, outer_product
-from toolbox import simplify, replace_var
-from integrate import integrate
+from QuAlg.q_state import BaseQubitState
+from QuAlg.fock_state import BaseFockState, FockOp
+from QuAlg.operators import Operator, outer_product
+from QuAlg.toolbox import simplify, replace_var
+from QuAlg.integrate import integrate
 
 
 def get_fock_states():

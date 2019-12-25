@@ -4,7 +4,6 @@ from collections import defaultdict
 from QuAlg.scalars import Scalar, is_scalar, is_number
 from QuAlg.states import BaseState, State
 from QuAlg.toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
-
 from QuAlg.integrate import integrate
 
 

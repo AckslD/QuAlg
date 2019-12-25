@@ -165,7 +165,7 @@ class TestMultiPhoton(unittest.TestCase):
             # old POVMs seem to have reverse numbering
             (n, m) = key
             rev_key = (m, n)
-            # ToDo: fix povms
+            # ToDo: fix povms (2,0) and (0,2)
             #print(key, np.testing.assert_array_almost_equal(array_dict[key], kraus_dict[rev_key].arr.real))
             print(key, np.allclose(array_dict[key], kraus_dict[rev_key].arr.real))
 

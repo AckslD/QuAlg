@@ -4,8 +4,8 @@ from collections import defaultdict
 from itertools import product
 import math
 
-from QuAlg.toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one, get_variables,\
-    has_variable
+from QuAlg.toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one,\
+    get_variables, has_variable
 
 
 def is_number(n):

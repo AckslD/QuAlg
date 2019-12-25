@@ -307,6 +307,7 @@ def generate_effective_povms(incoming_left, incoming_right, subset=None):
 
     """
     total_photon_number = incoming_left + incoming_right
+
     operators_dict = {}
     arguments = []
     for n in range(total_photon_number + 1):
