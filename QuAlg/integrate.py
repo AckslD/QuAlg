@@ -1,8 +1,8 @@
 from copy import copy
 from collections import namedtuple
 
-from toolbox import assert_str, replace_var, simplify, get_variables, has_variable
-from scalars import is_number, DeltaFunction, SumOfScalars, ProductOfScalars, InnerProductFunction,\
+from QuAlg.toolbox import assert_str, replace_var, simplify, get_variables, has_variable
+from QuAlg.scalars import is_number, DeltaFunction, SumOfScalars, ProductOfScalars, InnerProductFunction,\
     SingleVarFunctionScalar, Scalar, assert_is_scalar
 
 
@@ -54,7 +54,7 @@ class _Integration(Scalar):
         # raise NotImplementedError()
         if variable == self._variable:
             return False
-        return self._scalar.has_variable(variable)
+        return has_variable(self._scalar, variable)
 
     def _key(self):
         return (self._scalar, self._variable)
@@ -88,7 +88,7 @@ def integrate(scalar, variable=None):
             else:
                 other_factors.append(factor)
         if len(var_factors) > 0:
-            integration_part = [_Integration(ProductOfScalars(var_factors), variable)] 
+            integration_part = [_Integration(ProductOfScalars(var_factors), variable)]
         else:
             integration_part = []
 

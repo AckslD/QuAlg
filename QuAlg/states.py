@@ -1,8 +1,8 @@
 import abc
 from collections import defaultdict
 
-from scalars import is_scalar
-from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
+from QuAlg.scalars import is_scalar
+from QuAlg.toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
 
 
 class BaseState(abc.ABC):

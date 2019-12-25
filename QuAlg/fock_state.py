@@ -1,9 +1,9 @@
 from collections import defaultdict
 from itertools import permutations
 
-from scalars import DeltaFunction
-from states import BaseState
-from toolbox import assert_str, assert_list_or_tuple, replace_var
+from QuAlg.scalars import DeltaFunction
+from QuAlg.states import BaseState
+from QuAlg.toolbox import assert_str, assert_list_or_tuple, replace_var
 
 
 class FockOp:

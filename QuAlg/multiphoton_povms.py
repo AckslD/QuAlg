@@ -1,19 +1,20 @@
-from netsquid_ae.qdetector_multi import set_operators
+# from netsquid_ae.qdetector_multi import set_operators
 
 import numpy as np
 import math
-from itertools import product
 import time
+import pickle
+import multiprocessing
 
 
-from scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars, \
+from QuAlg.scalars import SingleVarFunctionScalar, InnerProductFunction, ProductOfScalars, SumOfScalars, \
     is_number
-from q_state import BaseQuditState
-from states import State
-from fock_state import BaseFockState, FockOp, FockOpProduct
-from operators import Operator, outer_product
-from toolbox import simplify, replace_var
-from integrate import integrate
+from QuAlg.q_state import BaseQuditState
+from QuAlg.states import State
+from QuAlg.fock_state import BaseFockState, FockOp, FockOpProduct
+from QuAlg.operators import Operator, outer_product
+from QuAlg.toolbox import simplify, replace_var, get_variables
+from QuAlg.integrate import integrate
 
 
 def generate_fock_states(photon_number_a, photon_number_b):
@@ -87,9 +88,9 @@ def construct_fock_state(num_mode_a, num_mode_b):
     if len(state_nm) != 2**(num_mode_a+num_mode_b):
         raise ValueError("State has the wrong length.")
 
-    state = simplify(state_nm)
+    #state = simplify(state_nm)
 
-    return state
+    return state_nm
 
 
 def generate_projectors(max_number_photons):
@@ -148,6 +149,17 @@ def construct_projector(num_left, num_right):
         state @= BaseFockState([FockOp("c", f"w{i+1}")]).to_state()
     for i in range(num_left, num_left+num_right):
         state @= BaseFockState([FockOp("d", f"w{i+1}")]).to_state()
+
+    # replace variables
+    num_vars = len(state.get_variables())
+    w_j = []
+    p_j = []
+    for j in range(num_vars):
+        w_j.append(f"w{j+1}")
+        p_j.append(f"p{j+1}")
+    for old, new in zip(w_j, p_j):
+        state = replace_var(state, old, new)
+
     # state = simplify(state)
     norm = float(1/np.sqrt(math.factorial(num_left) * math.factorial(num_right)))
     state = norm * state
@@ -193,6 +205,7 @@ def construct_beam_splitter(num_photons_a, num_photons_b):
         for m in range(num_photons_b + 1):
             combi.append(f"{n}" + f"{m}")
     qubit_states = [BaseQuditState(b, base=num_photons_a + 1).to_state() for b in combi]
+    print("qubit_states", qubit_states)
 
     beam_splitter = sum((
         outer_product(fock_state, qubit_state)
@@ -225,12 +238,27 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     # TODO: fix this parameter
     incoming_photons = max_num_photons_per_side
 
+    start_time = time.time()
+    print(f"Generating M_{clicks_left}_{clicks_right} ...")
+
     u = construct_beam_splitter(incoming_photons, incoming_photons)
     p = construct_projector(clicks_left, clicks_right)
-    m = u.dagger() * p * replace_var(u)
+    # lmul unitary and projector
+    m = u.dagger() * p
     m = simplify(m)
-    # print(m)
-    # generate possible states
+    # simplify
+    for base_op, scalar in m._terms.items():
+        scalar_variables = get_variables(scalar) - get_variables(base_op)
+        m._terms[base_op] = integrate(scalar, scalar_variables)
+    # rmul unitary
+    m = m * replace_var(u)
+    mid_time = time.time()
+    print(f"Generating M_{clicks_left}_{clicks_right} took {time.time() - start_time}.")
+    # simplify
+    for base_op, scalar in m._terms.items():
+        scalar_variables = get_variables(scalar) - get_variables(base_op)
+        m._terms[base_op] = integrate(scalar, scalar_variables)
+    '''# generate possible states
     combi = []
     for j in range(incoming_photons + 1):
         for k in range(incoming_photons + 1):
@@ -238,17 +266,25 @@ def calculate_povm(clicks_left, clicks_right, max_num_photons_per_side):
     states = [BaseQuditState(b, base=incoming_photons + 1).to_state() for b in combi]
     print("M_{}{}".format(clicks_left, clicks_right))
     # output individual matrix elements
-    '''for sl, sr in product(states, repeat=2):
+    for sl, sr in product(states, repeat=2):
         inner = simplify(m * sr)
         inner = inner.inner_product(sl)
         bsl = next(iter(sl))[0]
         bsr = next(iter(sr))[0]
         print(f"\t{bsl}{bsr._bra_str()}: {integrate(inner)}")'''
 
-    return m
+    print(f"Fully simplifying M_{clicks_left}_{clicks_right} took {time.time() - mid_time}s,"
+          f"total time: {time.time() - start_time}s.")
+
+    return simplify(m)
 
 
-def generate_effective_povms(incoming_left, incoming_right):
+def wrap_povm(left, right, tot):
+    """Short wrapper to return tuple of (parameters, result) in multiprocessing."""
+    return (left, right), calculate_povm(left, right, tot)
+
+
+def generate_effective_povms(incoming_left, incoming_right, subset=None):
     """Function that generates all possible POVM operators for arbitrary number of incoming photons from the left
     and the right.
 
@@ -261,42 +297,69 @@ def generate_effective_povms(incoming_left, incoming_right):
         Maximum number of incoming photons from the left.
     incoming_right : int
         Maximum number of incoming photons from the right.
+    subset : None, "leq" or "g"
+        Mode of slicing the full set of POVM into subset
 
     Returns
     -------
-    operators : list of operators (:class:'operators.Operator')
-        List of all possible POVM operators for the given number of incoming photons.
+    operators_dict : dict of operators (:class:'operators.Operator') and tuples as keys
+        Dictionary of all possible POVM operators for the given number of incoming photons.
 
     """
     total_photon_number = incoming_left + incoming_right
-    operators = []
+    operators_dict = {}
+    arguments = []
     for n in range(total_photon_number + 1):
         for m in range(total_photon_number + 1):
             if n + m <= total_photon_number:
-                operators.append(calculate_povm(n, m, max(incoming_left, incoming_right)))
+                if subset == "leq":
+                    if n <= m:
+                        arguments.append((n, m, max(incoming_left, incoming_right)))
+                elif subset == "g":
+                    if n > m:
+                        arguments.append((n, m, max(incoming_left, incoming_right)))
+                elif subset is None:
+                    arguments.append((n, m, max(incoming_left, incoming_right)))
+                else:
+                    raise ValueError(f"subset should be None, 'leq' or 'g' and not {subset}.")
 
-    return operators
+    with multiprocessing.Pool() as pool:
+        results = pool.starmap_async(wrap_povm, arguments)
+        for op in results.get():
+            operators_dict[op[0]] = op[1]
+
+    return operators_dict
 
 
-def convert_scalars(scalar):
-    visibility = 0.9
+def convert_scalars(scalar, visibility):
+    """Function passed on to `operators.to_numpy_matrix` to convert non-number scalars to numbers using a given
+    visibility.
+
+    Parameters
+    ----------
+    scalar : `scalars.Scalar`
+        Non-number scalar to be converted.
+    visibility : float
+        Photon indistinguishability / visibility to be used for conversion.
+
+    """
+    mu = np.sqrt(visibility)
 
     scalar = integrate(scalar)
     if is_number(scalar):
         return scalar
     for sequenced_class in [ProductOfScalars, SumOfScalars]:
         if isinstance(scalar, sequenced_class):
-            return simplify(sequenced_class([convert_scalars(s) for s in scalar]))
+            return simplify(sequenced_class([convert_scalars(s, visibility) for s in scalar]))
     if isinstance(scalar, InnerProductFunction):
-        if set([scalar._func_name1, scalar._func_name2]) == set(['phi', 'psi']):
-            return visibility
+        if set(scalar._func_names) == set(['phi', 'psi']):
+            return mu
     raise RuntimeError(f"unknown scalar {scalar} of type {type(scalar)}")
 
 
 if __name__ == '__main__':
     # import operators with visibility=1 as a test
-    kraus_ops, kraus_ops_num_res, outcome_dict = set_operators()
-
+    # kraus_ops, kraus_ops_num_res, outcome_dict = set_operators()
     num = 3
 
     '''s, s_dict = generate_fock_states(num, num)
@@ -306,10 +369,34 @@ if __name__ == '__main__':
     print(len(s))
     print("P_{}_{}: {}".format(2, 4, p_dict[(2, 4)]))
     construct_beam_splitter(num, num)'''
+
+    '''start_time = time.time()
+    n, m, tot = 0, 4, 3
+    print(f"Generating M_{n}_{m}")
+    povm = calculate_povm(n, m, tot)
+    middle_time = time.time()
+    array = povm.to_numpy_matrix(convert_scalars)
+    end_time = time.time()
+    print(povm)
+    print(array)
+    print(f"Time elapsed {end_time - start_time} (middle {middle_time - start_time})")
+    exit()'''
+
     start_time = time.time()
-    m = calculate_povm(2, 2, 3)
-    print("elapsed time:", time.time() - start_time)
+    # m = calculate_povm(0, 0, 3)
+    subset = None
+    povms = generate_effective_povms(3, 3, subset=subset)
+    print(f"Time elapsed {time.time() - start_time}")
+    with open(f'multiphoton_povms_full_3_3.pkl', 'wb') as output:
+        pickle.dump(povms, output, pickle.HIGHEST_PROTOCOL)
+    exit()
+    '''print("elapsed time:", time.time() - start_time)
     gen_time = time.time()
-    print(m.to_numpy_matrix(convert_scalars))
+    # print(povms.to_numpy_matrix(convert_scalars))
+    arrays = []
+    for p in povms:
+        arrays.append(p.to_numpy_matrix(convert_scalars))
     print(f"conversion took {time.time()-gen_time}")
+    with open('multiphoton_povms_arrays_full.pkl', 'wb') as output:
+        pickle.dump(arrays, output, pickle.HIGHEST_PROTOCOL)'''
 

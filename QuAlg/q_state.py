@@ -1,4 +1,4 @@
-from states import BaseState
+from QuAlg.states import BaseState
 
 
 class BaseQuditState(BaseState):
@@ -21,7 +21,7 @@ class BaseQuditState(BaseState):
         return f"|{self._digits}>"
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self._digits)})"
+        return f"{self.__class__.__name__}({repr(self._digits)}, {repr(self._base)})"
 
     def __len__(self):
         return len(self._digits)
