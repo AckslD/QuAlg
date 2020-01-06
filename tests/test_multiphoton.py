@@ -38,7 +38,6 @@ class TestMultiPhoton(unittest.TestCase):
         states, states_dict = generate_fock_states(pnum, pnum)
         for name in states_dict:
             for n, m in product(lst, lst):
-                start_time = time.time()
                 projector = construct_projector(n, m)
                 state = states_dict[name]
                 projection = projector * state
@@ -49,9 +48,6 @@ class TestMultiPhoton(unittest.TestCase):
                         projection._terms[base_op] = integrate(scalar, scalar_variables)
                 inner_prod = projection.inner_product(state)
                 norm = integrate(simplify(inner_prod))
-                '''print(f"<{name}|P{n, m}|{name}> = {norm}")
-                if time.time()-start_time > 1:
-                    print(f"calculation took: {time.time()-start_time}s")'''
                 (k, l) = name
                 if k + l != n + m:
                     self.assertAlmostEqual(norm, 0)
@@ -124,7 +120,6 @@ class TestMultiPhoton(unittest.TestCase):
 
         # generate povms
         ops_dict = generate_effective_povms(1, 1)
-        #for visibility in [0, 0.1, 1]:
         for visibility in np.linspace(0, 1, 10):
             # generate ll povms with current visibility
             ll_ops_dict = set_ll_operators_num_resolving(visibility)
@@ -156,43 +151,26 @@ class TestMultiPhoton(unittest.TestCase):
         kraus_dict = generate_dict(6, kraus_ops_num_res)
         array_dict = {}
         square_array_dict = {}
-        # convert operators to matrices with visibility = 1
+        # convert POVM operators to Kraus matrices with visibility = 1
         visibility = 1.
         for k in ops_dict.keys():
-            # TODO: why does sqrtm fuck up here?
             if k in [(0, 2), (2, 0)]:
                 square_array_dict[k] = (ops_dict[k].to_numpy_matrix(convert_scalars, visibility))
             array_dict[k] = sqrtm(ops_dict[k].to_numpy_matrix(convert_scalars, visibility))
 
-        #array_dict = generate_dict(4, arrays)
         for key in array_dict.keys():
             # old POVMs seem to have reverse numbering
             (n, m) = key
             rev_key = (m, n)
-            # ToDo: fix povms (2,0) and (0,2)
-            '''#print(key, np.testing.assert_array_almost_equal(array_dict[key], kraus_dict[rev_key].arr.real))
-            print(key, np.allclose(array_dict[key], kraus_dict[rev_key].arr.real))
-
-            if not np.allclose(array_dict[key], kraus_dict[rev_key].arr.real):
-                arr1 = array_dict[key]
-                arr2 = kraus_dict[rev_key].arr.real
-                print((array_dict[key] == kraus_dict[rev_key].arr.real).all(axis=1))
-                for i in range(16):
-                    if not (arr1[i,] == arr2[i,]).all():
-                        print(f"line {i}")
-                        print("new", arr1[i,])
-                        print("old", arr2[i,])
-                print(ops_dict[key])'''
-
-            #    print(array_dict[key])
-            #    print(kraus_dict[rev_key].arr.real)
-            if key not in [(2,0), (0,2)]:
+            if key not in [(2, 0), (0, 2)]:
                 self.assertTrue(np.testing.assert_array_almost_equal(array_dict[key],
-                                                                    kraus_dict[rev_key].arr.real) is None)
+                                                                     kraus_dict[rev_key].arr.real) is None)
             else:
-                print(f"For {key} the Kraus operators do not agree! But the old Kraus operator seems to miss a sqrt.")
+                print(f"For {key} the Kraus operators do not agree! But the old 'Kraus' operator seems to be the POVM "
+                      f"operator instead (therefore missing a sqrtm).")
                 self.assertTrue(np.testing.assert_array_almost_equal(square_array_dict[key],
                                                                      kraus_dict[rev_key].arr.real) is None)
+                print("POVM operators agree.")
 
 
 if __name__ == "__main__":
