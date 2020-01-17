@@ -10,4 +10,10 @@ The package contains the following modules
    :maxdepth: 2
    :caption: Contents:
 
-   modules/dummy_module
+   modules/fock_state.rst
+   modules/integrate.rst
+   modules/operators.rst
+   modules/q_state.rst
+   modules/scalars.rst
+   modules/states.rst
+   modules/toolbox.rst

@@ -8,10 +8,10 @@ from qualg.integrate import integrate
 
 
 class BaseOperator:
+    """Represents a single term of an operator, i.e. |left><right|,
+    where left and right are :class:`~.states.BaseState`'s.
+    """
     def __init__(self, left, right):
-        """Represents a single term of an operator, i.e. |left><right|,
-        where left and right are :class:`~.states.BaseState`'s.
-        """
         if not all(isinstance(s, BaseState) for s in [left, right]):
             raise TypeError(f"Both left and right should be of type BaseState, not {type(left)} or {type(right)}")
         self._left = left
@@ -305,7 +305,7 @@ class Operator:
 
 
 def outer_product(left, right):
-    """Creates an opertor based on the outer product of left and right, i.e. |left><right|."""
+    r"""Creates an opertor based on the outer product of left and right, i.e. \|left><right\|."""
     scalars = []
     base_ops = []
     for l_base_state, l_scalar in left._terms.items():

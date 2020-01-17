@@ -7,6 +7,7 @@ SPHINXBUILD   = sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = build
 PYTHON3       = python3
+HAS_OPEN      = $(shell which open 2> /dev/null)
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -24,7 +25,7 @@ python-deps:
 build: python-deps html
 
 open:
-ifeq (, $(shell which open))
+ifneq ("${HAS_OPEN}", "")
 	open ${BUILDDIR}/html/index.html
 else
 	xdg-open ${BUILDDIR}/html/index.html
