@@ -1,0 +1,55 @@
+language: python
+branches:
+  only:
+    - master
+    - develop
+matrix:
+  include:
+    # - name: Python 3.5 on Linux
+    #   python: 3.5
+    - name: Python 3.6 on Linux
+      python: 3.6
+      env:
+      - BUILD=True
+    # - name: Python 3.7 on Xenial Linux
+    #   python: 3.7
+    #   dist: xenial
+    # - name: Python 3.7 on macOS
+    #   os: osx
+    #   osx_image: xcode10.2
+    #   language: shell
+    #   env:
+    #   - PIPFLAG="--user"
+before_install:
+  - make build
+install:
+  - pip3 install dist/*.whl $PIPFLAG
+script:
+  - make lint
+  - make tests
+before_deploy:
+  - cd docs
+  - make build
+  - cd ..
+deploy:
+  - provider: pypi
+    user: adahlberg
+    password:
+      secure: SECURE_KEY
+    distributions: sdist bdist_wheel
+    skip_existing: true
+    on: 
+      branch: master
+      condition: "$BUILD = True"
+  - provider: pages
+    skip_cleanup: true
+    github_token: "$GITHUB_TOKEN"
+    keep_history: true
+    committer_from_gh: true
+    local_dir: docs/build/html
+    on:
+      branch: master
+      condition: "$BUILD = True"
+env:
+  global:
+    secure: SECURE_KEY
