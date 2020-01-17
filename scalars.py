@@ -1,9 +1,11 @@
 import abc
+import math
 from copy import copy
 from collections import defaultdict
 from itertools import product
 
-from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one, get_variables
+from toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one, get_variables,\
+    has_variable
 
 
 def is_number(n):
@@ -114,17 +116,16 @@ class InnerProductFunction(Scalar):
     def __init__(self, func_name1, func_name2):
         assert_str(func_name1)
         assert_str(func_name2)
-        self._func_name1 = func_name1
-        self._func_name2 = func_name2
+        self._func_names = sorted([func_name1, func_name2])
 
     def __str__(self):
-        return f"<{self._func_name1}|{self._func_name2}>"
+        return f"<{self._func_names[0]}|{self._func_names[1]}>"
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({repr(self._func_name1)}, {repr(self._func_name2)})"
+        return f"{self.__class__.__name__}({repr(self._func_names[0])}, {repr(self._func_names[1])})"
 
     def conjugate(self):
-        return self.__class__(self._func_name1, self._func_name2)
+        return self.__class__(self._func_names[0], self._func_names[0])
 
     def is_zero(self):
         return False
@@ -133,7 +134,7 @@ class InnerProductFunction(Scalar):
         return False
 
     def _key(self):
-        return (self._func_name1, self._func_name2)
+        return tuple(self._func_names)
 
 
 class DeltaFunction(Scalar):
@@ -283,7 +284,14 @@ class ProductOfScalars(Scalar):
         return SumOfScalars([ProductOfScalars(term) for term in product(*expandable_factors)])
 
     def is_zero(self):
-        return any(is_zero(s) for s in self._factors)
+        for f in self._factors:
+            if isinstance(f, float):
+                if math.isclose(f, 0, abs_tol=1e-16):
+                    return True
+            else:
+                if is_zero(f):
+                    return True
+        return False
 
     def is_one(self):
         return all(is_one(s) for s in self._factors)
@@ -333,7 +341,7 @@ class ProductOfScalars(Scalar):
         return False
 
     def has_variable(self, variable):
-        return any(factor.has_variable(variable) for factor in self)
+        return any(has_variable(factor, variable) for factor in self)
 
     def _key(self):
         factors_with_multi = defaultdict(int)
@@ -442,6 +450,9 @@ class SumOfScalars(Scalar):
     def simplify(self, full=True):
         new_scalar = 0
         expanded = self.expand()
+
+        if not isinstance(expanded, SumOfScalars):
+            return simplify(expanded)
         if is_number(expanded):
             return expanded
         for term in expanded:
@@ -482,7 +493,7 @@ class SumOfScalars(Scalar):
         return False
 
     def has_variable(self, variable):
-        return any(factor.has_variable(variable) for factor in self)
+        return any(has_variable(factor, variable) for factor in self)
 
     def _key(self):
         terms_with_multi = defaultdict(int)

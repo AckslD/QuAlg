@@ -4,6 +4,7 @@ from collections import defaultdict
 from scalars import Scalar, is_scalar, is_number
 from states import BaseState, State
 from toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
+from integrate import integrate
 
 
 class BaseOperator:
@@ -153,6 +154,12 @@ class Operator:
             for other_base_op, other_scalar in operator._terms.items():
                 new_base_op = BaseOperator(self_base_op._left, other_base_op._right)
                 new_scalar = self_base_op._right.inner_product(other_base_op._left) * self_scalar * other_scalar
+
+                # Integrate out the variables which are not in the base operator
+                # TODO keep this?
+                scalar_variabels = get_variables(new_scalar) - get_variables(new_base_op)
+                new_scalar = integrate(new_scalar, scalar_variabels)
+
                 if is_zero(new_scalar):
                     continue
                 new_op._terms[new_base_op] += new_scalar
@@ -238,12 +245,20 @@ class Operator:
 
         return vars
 
-    def to_numpy_matrix(self, convert_scalars=None):
+    def to_numpy_matrix(self, convert_scalars=None, **kwargs):
         """Converts the operator to a numpy matrix.
 
         If there are non-number scalars then the provided function `convert_scalars`
         is used to convert a non-number scalar to a number.
         This function should then take a scalar and return a number.
+
+        Parameters
+        ----------
+        convert_scalars : function
+            Function used to convert non-number scalars to a number. Should take a scalar (and optionally an argument)
+            and return a number.
+        **kwargs :
+            Keyword-arguments passed on to the convert_scalars function.
         """
         matrix = np.zeros(self.shape)
         for base_op, scalar in self:
@@ -252,7 +267,7 @@ class Operator:
                 if convert_scalars is None:
                     raise ValueError("If the operator contains non-numbers, "
                                      "the function `convert_scalars` needs to be provided")
-                scalar = convert_scalars(scalar)
+                scalar = convert_scalars(scalar, **kwargs)
             matrix[index] = scalar
 
         return matrix
