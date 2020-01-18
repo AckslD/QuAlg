@@ -1,3 +1,16 @@
+r"""
+Module for representing operators of quantum states.
+
+An :class:`~.Operator` is constructed as a sum of :class:`~.BaseOperator`s, which define how
+the terms of  the operator act on :class:`~.states.BaseState` and in turn :class:`~.states.State`
+
+The :class:`~.BaseOperator`-class represents a single term of the form \|left><right\|,
+where left and right are :class:`~.states.BaseState`'s. The :class:`~.BaseOperator` is
+agnostic to which subclass of :class:`~.states.BaseState` is used.
+
+The :class:`~.Operator`-class is then a sum of :class:`~.BaseOperator`.
+"""
+
 import numpy as np
 from collections import defaultdict
 
@@ -8,10 +21,17 @@ from qualg.integrate import integrate
 
 
 class BaseOperator:
-    """Represents a single term of an operator, i.e. |left><right|,
-    where left and right are :class:`~.states.BaseState`'s.
-    """
     def __init__(self, left, right):
+        r"""Represents a single term of an operator, i.e. \|left><right\|,
+        where left and right are :class:`~.states.BaseState`'s.
+
+        Parameters
+        ----------
+        left : :class:`~.states.BaseState`
+            Left side of operator.
+        right : :class:`~.states.BaseState`
+            Right side of operator.
+        """
         if not all(isinstance(s, BaseState) for s in [left, right]):
             raise TypeError(f"Both left and right should be of type BaseState, not {type(left)} or {type(right)}")
         self._left = left
@@ -43,6 +63,10 @@ class BaseOperator:
 
     @property
     def shape(self):
+        """Returns the shape of the operator, e.q. (2, 2) for a single-qubit operator.
+
+        `None` means that the shape is undefined, e.g. if the state is infinite-dimensional.
+        """
         return (self._left.shape[0], self._right.shape[0])
 
     def _mul_compatible(self, other):
@@ -68,7 +92,7 @@ class BaseOperator:
         return self._left._compatible(other._left) and self._right._compatible(other._right)
 
     def to_operator(self):
-        """Converts the base operator to an operator with a single term."""
+        """Converts the base operator to an :class:`~.Operator` with a single term."""
         return Operator([self])
 
     def _assert_class(self, other):
@@ -76,10 +100,16 @@ class BaseOperator:
             raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")
 
     def replace_var(self, old_variable, new_variable):
+        """
+        Replaces a variable with another.
+        """
         return BaseOperator(replace_var(self._left, old_variable, new_variable),
                             replace_var(self._right, old_variable, new_variable))
 
     def get_variables(self):
+        """
+        Returns the variable of this operator.
+        """
         vars = set([])
         for bs in [self._left, self._right]:
             vars |= bs.get_variables()
@@ -92,6 +122,18 @@ class BaseOperator:
 
 class Operator:
     def __init__(self, base_ops=None, scalars=None):
+        """
+        An operator represented as a sum of :class:`~.BaseOperator` of a subclass thereof.
+
+        Parameters
+        ----------
+        base_ops : None or list of :class:`~.BaseOperator`
+            The base operators that sums up to this operator.
+            If `None`, then the operator is "zero", i.e. no terms.
+        scalar : None or list of :class:`~.scalar.Scalar`
+            The amplitudes used when taking the sum of base operators.
+            If `None`, then all operators have amplitude 1.
+        """
         # NOTE assuming that all scalars can add int()
         self._terms = defaultdict(int)
         if base_ops is None:
@@ -202,6 +244,10 @@ class Operator:
 
     @property
     def shape(self):
+        """Returns the shape of the operator, e.q. (2, 2) for a single-qubit operator.
+
+        `None` means that the shape is undefined, e.g. if the state is infinite-dimensional.
+        """
         if len(self) == 0:
             return (0, 0)
         else:
@@ -212,6 +258,9 @@ class Operator:
         return self._terms.get(base_op, 0)
 
     def dagger(self):
+        """
+        Complex conjugate of the operator.
+        """
         new_op = Operator()
         for base_op, scalar in self._terms.items():
             new_base_op = BaseOperator(left=base_op._right, right=base_op._left)
@@ -220,6 +269,9 @@ class Operator:
         return new_op
 
     def simplify(self):
+        """
+        Tries to simplify the operator, returning a new one.
+        """
         new_op = Operator()
         for base_op, scalar in self._terms.items():
             new_op._terms[base_op] = simplify(scalar)
@@ -229,6 +281,9 @@ class Operator:
         return new_op
 
     def replace_var(self, old_variable, new_variable):
+        """
+        Replaces a variable with another.
+        """
         new_op = Operator()
         for base_op, scalar in self._terms.items():
             new_base_op = replace_var(base_op, old_variable, new_variable)
@@ -238,6 +293,9 @@ class Operator:
         return new_op
 
     def get_variables(self):
+        """
+        Returns the variable of this operator.
+        """
         vars = set([])
         for term in self:
             for part in term:
@@ -317,7 +375,20 @@ class Operator:
 
 
 def outer_product(left, right):
-    r"""Creates an opertor based on the outer product of left and right, i.e. \|left><right\|."""
+    r"""Creates an opertor based on the outer product of left and right, i.e. \|left><right\|.
+
+    Parameters
+    ----------
+    left : :class:`~.states.BaseState`
+        Left side of operator.
+    right : :class:`~.states.BaseState`
+        Right side of operator.
+
+    Returns
+    -------
+    :class:`~.Operator`
+        The new operator.
+    """
     scalars = []
     base_ops = []
     for l_base_state, l_scalar in left._terms.items():

@@ -1,3 +1,8 @@
+"""
+Contains classes for representing in excited states of some bosonic mode.
+The creation/annihilation operators have a symbolic variable which can for example
+be the frequency of the excited state.
+"""
 from collections import defaultdict
 from itertools import permutations
 
@@ -8,6 +13,20 @@ from qualg.toolbox import assert_str, assert_list_or_tuple, replace_var
 
 class FockOp:
     def __init__(self, mode, variable, creation=True):
+        """
+        Represents an creation/annihilation operator in a given mode with a given variable
+        representing for example the frequency of the excitation.
+
+        Parameters
+        ----------
+
+        mode: str
+            The mode of the excitation
+        variable: str
+            The variable describing the continous variable
+        creation : bool
+            Whether this is a creation operator or not (annihilation).
+        """
         assert_str(mode)
         assert_str(variable)
         self._mode = mode
@@ -33,20 +52,37 @@ class FockOp:
         return f"{self.__class__.__name__}({self._mode}, {self._variable}, {self._creation})"
 
     def dagger(self):
+        """
+        Complex conjugate of the operator.
+        """
         return FockOp(self._mode, self._variable, not self._creation)
 
     def replace_var(self, old_variable, new_variable):
+        """
+        Replaces a variable with another.
+        """
         var = self._variable
         if old_variable == var:
             var = new_variable
         return self.__class__(self._mode, var, creation=self._creation)
 
     def get_variables(self):
+        """
+        Returns the variable of this operator.
+        """
         return set([self._variable])
 
 
 class FockOpProduct:
     def __init__(self, fock_ops=None):
+        """
+        A product of excitation operators (:class:`~.FockOp`).
+
+        Parameters
+        ----------
+        fock_ops : list of :class:`~.FockOp`
+            The product of fock operators.
+        """
         self._fock_ops = defaultdict(int)
         if fock_ops is None:
             return
@@ -90,6 +126,9 @@ class FockOpProduct:
         return self._key() == other._key()
 
     def dagger(self):
+        """
+        Complex conjugate of the operator.
+        """
         new_op = FockOpProduct()
         for fock_op, count in self._fock_ops.items():
             new_op[fock_op.dagger()] = count
@@ -97,6 +136,9 @@ class FockOpProduct:
         return new_op
 
     def variables_in_mode(self, mode):
+        """
+        Get the variables in a given mode.
+        """
         variables = []
         for fock_op, count in self._fock_ops.items():
             if fock_op._mode == mode:
@@ -106,6 +148,9 @@ class FockOpProduct:
         return variables
 
     def variables_by_modes(self):
+        """
+        Get a dictionay of variables per modes.
+        """
         variables = defaultdict(list)
         for fock_op, count in self._fock_ops.items():
             mode = fock_op._mode
@@ -115,12 +160,18 @@ class FockOpProduct:
         return variables
 
     def replace_var(self, old_variable, new_variable):
+        """
+        Replaces a variable with another.
+        """
         new_fock_op_product = FockOpProduct()
         for fock_op, count in self._fock_ops.items():
             new_fock_op_product._fock_ops[replace_var(fock_op, old_variable, new_variable)] = count
         return new_fock_op_product
 
     def get_variables(self):
+        """
+        Returns the variable of this operator.
+        """
         vars = set([])
         for fock_op in self._fock_ops:
             vars |= fock_op.get_variables()
@@ -130,6 +181,14 @@ class FockOpProduct:
 
 class BaseFockState(BaseState):
     def __init__(self, fock_ops=None):
+        """
+        A base state represented by excitations from vacuum.
+
+        Parameters
+        ----------
+        fock_ops : :class:`.FockOpProduct` or list of :class:`~.FockOp`
+            The product of fock operators.
+        """
         if isinstance(fock_ops, FockOpProduct):
             self._fock_op_product = fock_ops
         else:
@@ -157,7 +216,6 @@ class BaseFockState(BaseState):
         return None
 
     def inner_product(self, other):
-        # TODO check this for more than one creation/annihilation operators
         if not isinstance(other, self.__class__):
             raise TypeError()
         l_vars_by_mode = self._fock_op_product.variables_by_modes()
@@ -186,9 +244,15 @@ class BaseFockState(BaseState):
         return BaseFockState(fock_ops=prod)
 
     def replace_var(self, old_variable, new_variable):
+        """
+        Replaces a variable with another.
+        """
         return self.__class__(replace_var(self._fock_op_product, old_variable, new_variable))
 
     def get_variables(self):
+        """
+        Returns the variable of this operator.
+        """
         return self._fock_op_product.get_variables()
 
     def _compatible(self, other):
@@ -204,37 +268,8 @@ class BaseFockState(BaseState):
 
 
 def assert_fock_op(op):
+    """
+    Asserts that an object is a fock operator.
+    """
     if not isinstance(op, FockOp):
         raise TypeError(f"operator should be of type FockOp, not {type(op)}")
-
-
-def test_fock_op_product():
-    aw = FockOp('a', 'w')
-    av = FockOp('a', 'v')
-
-    print(FockOpProduct([aw, av]))
-    print(FockOpProduct([aw, av, aw]))
-
-
-def test_inner_product():
-    aw = FockOp('a', 'w')
-    av = FockOp('a', 'v')
-    s1 = BaseFockState([aw])
-    s2 = BaseFockState([av])
-    print(s1.inner_product(s2))
-
-
-def test_inner_product_multi_photon():
-    cw1 = FockOp('c', 'w1')
-    cw2 = FockOp('c', 'w2')
-    cw3 = FockOp('c', 'w3')
-    state = BaseFockState([cw1, cw2, cw3]).to_state()
-    print(state)
-    print()
-    print(state.inner_product(state))
-
-
-if __name__ == '__main__':
-    # test_fock_op_product()
-    # test_inner_product()
-    test_inner_product_multi_photon()

@@ -1,3 +1,9 @@
+"""
+Containing classes for various scalars.
+Used for example as output when taking inner-product of states.
+In particular when the output is not a number but a symbolic variable of function.
+"""
+
 import abc
 import math
 from copy import copy
@@ -9,14 +15,21 @@ from qualg.toolbox import assert_list_or_tuple, assert_str, expand, simplify, is
 
 
 def is_number(n):
+    """Check if something is a number (int, float or complex)"""
     return any(isinstance(n, tp) for tp in [int, float, complex])
 
 
 def is_scalar(n):
+    """Check if something is considered a scalar (number of :class:`~.Scalar`)"""
     return is_number(n) or isinstance(n, Scalar)
 
 
 class Scalar(abc.ABC):
+    """
+    Base-class for all scalars.
+
+    Meant to be subclassed.
+    """
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
@@ -58,13 +71,18 @@ class Scalar(abc.ABC):
         return self + other
 
     def has_variable(self, variable):
+        """Checks if scalar depends on a given variable."""
         return False
 
     def get_variables(self):
+        """
+        Returns the variable of this operator.
+        """
         return set([])
 
     @abc.abstractmethod
     def conjugate(self):
+        """Complex conjugate"""
         pass
 
     @abc.abstractmethod
@@ -74,6 +92,17 @@ class Scalar(abc.ABC):
 
 class SingleVarFunctionScalar(Scalar):
     def __init__(self, func_name, variable, conjugate=False):
+        """Represents a function with a single symbolic variable, e.g. f(x).
+
+        Parameters
+        ----------
+        func_name : str
+            Name of function.
+        variable : str
+            Name of variable.
+        conjugate (optional) : bool
+            If the functions is conjugated (default: `False`)
+        """
         assert_str(func_name)
         assert_str(variable)
         self._func_name = func_name
@@ -114,6 +143,15 @@ class SingleVarFunctionScalar(Scalar):
 
 class InnerProductFunction(Scalar):
     def __init__(self, func_name1, func_name2):
+        """Represents the inner product of two functions.
+
+        Parameters
+        ----------
+        func_name1 : str
+            Name of first function
+        func_name2 : str
+            Name of second function
+        """
         assert_str(func_name1)
         assert_str(func_name2)
         self._func_names = sorted([func_name1, func_name2])
@@ -139,6 +177,15 @@ class InnerProductFunction(Scalar):
 
 class DeltaFunction(Scalar):
     def __init__(self, var1, var2):
+        """Delta function between two variables, e.g. d(x - y)
+
+        Parameters
+        ----------
+        var1 : str
+            First variable
+        var2 : str
+            First variable
+        """
         assert_str(var1)
         assert_str(var2)
         self._assert_different(var1, var2)
@@ -186,6 +233,13 @@ class DeltaFunction(Scalar):
 
 class ProductOfScalars(Scalar):
     def __init__(self, scalars=None):
+        """Product of some number of scalars.
+
+        Parameters
+        ----------
+        scalars : None or list of :class:`~.scalar`
+            The factors of the product.
+        """
         self._factors = [1]
         if scalars is None:
             return
@@ -352,6 +406,13 @@ class ProductOfScalars(Scalar):
 
 class SumOfScalars(Scalar):
     def __init__(self, scalars=None):
+        """Sum of some number of scalars.
+
+        Parameters
+        ----------
+        scalars : None or list of :class:`~.scalar`
+            The terms of the sum.
+        """
         self._terms = [0]
         if scalars is None:
             return
@@ -503,6 +564,7 @@ class SumOfScalars(Scalar):
 
 
 def assert_is_scalar(n):
+    """Asserts that something is a scalar"""
     if not is_scalar(n):
         raise TypeError(f"variable ({n}) should be a scalar, not {type(n)}")
 
@@ -518,36 +580,3 @@ def _get_multiple_of_scalar(scalar):
 
 def _is_sequenced_scalar(scalar):
     return any(isinstance(scalar, tp) for tp in [ProductOfScalars, SumOfScalars])
-
-
-def test_sum_of_scalars():
-    f1 = SingleVarFunctionScalar("f", "x")
-    f2 = SingleVarFunctionScalar("f", "y")
-    d = DeltaFunction("x", "y")
-    expr = f1 * f2.conjugate() * d
-    print(expr)
-
-
-def test_expand():
-    a = SingleVarFunctionScalar('a', 'x')
-    b = SingleVarFunctionScalar('b', 'x')
-    c = SingleVarFunctionScalar('c', 'x')
-    d = SingleVarFunctionScalar('d', 'x')
-
-    expr = (a + b) * (c + d)
-    print(expr.expand())
-
-
-def test_simplify():
-    a = SingleVarFunctionScalar('a', 'x')
-    b = SingleVarFunctionScalar('b', 'x')
-    c = SingleVarFunctionScalar('c', 'x')
-
-    expr = (a + b) * (c + 0)
-    print(expr.simplify())
-
-
-if __name__ == '__main__':
-    # test_sum_of_scalars()
-    # test_expand()
-    test_simplify()

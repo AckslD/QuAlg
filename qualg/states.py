@@ -1,3 +1,14 @@
+r"""
+Module for representing quantum states.
+
+The :class:`~.BaseState`-class is intended to be subclassed for different types of states,
+e.g. qubit states, qudit states, fock states etc.
+
+The :class:`~.State`-class is then a sum of :class:`~.BaseState`s and is not
+intended to be subclassed but rather agnostic to the exact :class:`~.BaseState`-class
+in the sum.
+"""
+
 import abc
 from collections import defaultdict
 
@@ -6,6 +17,11 @@ from qualg.toolbox import assert_list_or_tuple, simplify, replace_var, get_varia
 
 
 class BaseState(abc.ABC):
+    r"""Abstract base state class.
+    Represents a single term of state and used to define how inner product should be taken etc.
+
+    Meant to be subclassed.
+    """
     @abc.abstractmethod
     def __eq__(self, other):
         pass
@@ -19,10 +35,36 @@ class BaseState(abc.ABC):
 
     @abc.abstractmethod
     def inner_product(self, other):
+        """
+        Takes the inner product with another :class:`~.BaseState`.
+
+        Parameters
+        ----------
+        other : :class:`.BaseState`
+            The right hand side of the inner product.
+
+        Returns
+        -------
+        :class`~.scalar.Scalar`
+            The inner product
+        """
         pass
 
     @abc.abstractmethod
     def tensor_product(self, other):
+        """
+        Takes the tensor product with another :class:`~.BaseState`.
+
+        Parameters
+        ----------
+        other : :class:`.BaseState`
+            The right hand side of the tensor product.
+
+        Returns
+        -------
+        :class:`~.BaseState`
+            The tensor product
+        """
         pass
 
     @abc.abstractmethod
@@ -59,6 +101,18 @@ class BaseState(abc.ABC):
 
 class State:
     def __init__(self, base_states=None, scalars=None):
+        """A quantum state.
+        Constructed as a sum of (subclass) :class:`~.BaseState`.
+
+        Parameters
+        ----------
+        base_states : None or list of :class:`~.BaseState`
+            The base states that sums up to this state.
+            If `None`, then the state is "zero", i.e. no terms.
+        scalar : None or list of :class:`~.scalar.Scalar`
+            The amplitudes used when taking the sum of base states.
+            If `None`, then all operators have amplitude 1.
+        """
         if base_states is None:
             self._terms = defaultdict(int)
             return
@@ -154,6 +208,23 @@ class State:
         return self._terms.get(base_state, 0)
 
     def inner_product(self, other, first_replace_var=True):
+        """
+        Takes the inner product with another :class:`~.State`.
+
+        Parameters
+        ----------
+        other : :class:`.State`
+            The right hand side of the inner product.
+        first_replace_var (optional) : bool
+            Whether to replace all varibles of the right hand side with
+            new ones. This can be useful when the two states are actually integrals
+            over the variables and should therefore be different.
+
+        Returns
+        -------
+        :class`~.scalar.Scalar`
+            The inner product
+        """
         if not isinstance(other, self.__class__):
             raise NotImplementedError(f"inner product is not implemented for {type(other)}")
         if not self._compatible(other):
@@ -177,6 +248,19 @@ class State:
         return inner
 
     def tensor_product(self, other):
+        """
+        Takes the tensor product with another :class:`~.State`.
+
+        Parameters
+        ----------
+        other : :class:`.State`
+            The right hand side of the tensor product.
+
+        Returns
+        -------
+        :class:`~.State`
+            The tensor product
+        """
         if not isinstance(other, self.__class__):
             raise NotImplementedError(f"tensor product is not implemented for {type(other)}")
         tensor = State()
@@ -188,6 +272,7 @@ class State:
         return tensor
 
     def simplify(self):
+        """Tries to simplify the state."""
         new_state = State()
         for base_state, scalar in self._terms.items():
             new_state._terms[base_state] = simplify(scalar)
@@ -197,6 +282,9 @@ class State:
         return new_state
 
     def replace_var(self, old_variable, new_variable):
+        """
+        Replaces a variable with another.
+        """
         new_state = State()
         for base_state, scalar in self._terms.items():
             new_base_state = replace_var(base_state, old_variable, new_variable)
@@ -206,6 +294,9 @@ class State:
         return new_state
 
     def get_variables(self):
+        """
+        Returns the variable of this operator.
+        """
         vars = set([])
         for term in self:
             for part in term:

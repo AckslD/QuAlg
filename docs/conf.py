@@ -32,7 +32,15 @@ release = '0.0.0'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.githubpages',
+    'sphinx.ext.todo',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.doctest',
 ]
+napoleon_include_init_with_doc = True
+autodoc_member_order = 'bysource'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
