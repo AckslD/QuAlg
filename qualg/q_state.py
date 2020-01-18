@@ -1,8 +1,25 @@
+"""
+Contains classes for qubit and qubit base states.
+"""
 from qualg.states import BaseState
 
 
 class BaseQuditState(BaseState):
     def __init__(self, digits, base=2):
+        """
+        A qudit base state.
+
+        Parameters
+        ----------
+        digits : str
+            A string of the digits representing the base state, e.g "010".
+            Which digits in the range 0..(base-1).
+        base (optional) : int
+            How many basis states there are per position, e.g. 2 (defualt) for qubits.
+        """
+        if base >= 10:
+            # TODO
+            raise NotImplementedError("'base' must be lower than 10")
         if not isinstance(digits, str):
             raise TypeError(f"digits should be a string, not {type(digits)}")
         self._base = base
@@ -69,4 +86,13 @@ class BaseQuditState(BaseState):
 
 class BaseQubitState(BaseQuditState):
     def __init__(self, digits):
+        """
+        A qubit base state. (same as :class:`~.BaseQuditState` except that 'base' is fixed to 2)
+
+        Parameters
+        ----------
+        digits : str
+            A string of the digits representing the base state, e.g "010".
+            Which digits in the range 0..1.
+        """
         super().__init__(digits, base=2)

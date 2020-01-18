@@ -1,12 +1,13 @@
+"""
+Module for performing integration of scalars (:func:`~.scalar.Scalar`).
+
+Main function is :func:`~.integrate` which takes a scalar and the variables to integrate over.
+"""
 from copy import copy
-from collections import namedtuple
 
 from qualg.toolbox import assert_str, replace_var, simplify, get_variables, has_variable
-from qualg.scalars import is_number, DeltaFunction, SumOfScalars, ProductOfScalars, InnerProductFunction,\
-    SingleVarFunctionScalar, Scalar, assert_is_scalar
-
-
-IntegrateResult = namedtuple("IntegrateResult", ["scalar", "applied"])
+from qualg.scalars import is_number, DeltaFunction, SumOfScalars, ProductOfScalars,\
+    InnerProductFunction, SingleVarFunctionScalar, Scalar, assert_is_scalar
 
 
 class _Integration(Scalar):
@@ -61,6 +62,25 @@ class _Integration(Scalar):
 
 
 def integrate(scalar, variable=None):
+    """
+    Integrates a scalar over a given variable or variables.
+
+    Parameters
+    ----------
+    scalar : :class:`~.scalar.Scalar`
+        The scalar to integrate.
+    variable : None or str or set of str
+        The variable(s) to integrate over.
+        Can be:
+        * `None`: Then all variables in the scalar are integrated out.
+        * `str`: Then a single variable is integrated out.
+        * `set` of `str`: Then all the variables in the set are integrated out.
+
+    Returns
+    -------
+    :class:`~.scalar.Scalar`
+        The output of the integration.
+    """
     # TODO needed?
     scalar = simplify(scalar)
     if variable is None:
@@ -151,25 +171,3 @@ EVALUATIONS = [
     _find_norm_identities,
     _find_function_inner_products,
 ]
-
-
-def test_integrate():
-    f1 = SingleVarFunctionScalar("f", "x")
-    f2 = SingleVarFunctionScalar("f", "y")
-    d = DeltaFunction("x", "y")
-    expr = f1 * f2.conjugate() * d
-    print(integrate(expr, "x"))
-
-
-def test_integrate2():
-    f1 = SingleVarFunctionScalar("f", "x")
-    f2 = SingleVarFunctionScalar("f", "y")
-    f3 = f1 * f2.conjugate()
-    d = DeltaFunction("x", "y")
-    expr = (f3 + f3) * d
-    print(integrate(expr, "x"))
-
-
-if __name__ == '__main__':
-    test_integrate()
-    # test_integrate2()

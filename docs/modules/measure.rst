@@ -1,6 +1,6 @@
-q_state
+measure
 =======
 
-.. automodule:: qualg.q_state
+.. automodule:: qualg.measure
    :members:
    :undoc-members:

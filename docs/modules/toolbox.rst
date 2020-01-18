@@ -1,7 +1,6 @@
 toolbox
 =======
 
-.. note:: Write docs
-
 .. automodule:: qualg.toolbox
    :members:
+   :undoc-members:

@@ -11,6 +11,7 @@ The package contains the following modules
    :caption: Contents:
 
    modules/fock_state.rst
+   modules/measure.rst
    modules/integrate.rst
    modules/operators.rst
    modules/q_state.rst
