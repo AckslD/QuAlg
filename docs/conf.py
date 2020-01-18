@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'qualg'
+project = 'QuAlg'
 copyright = '2019, Axel Dahlberg'
 author = 'Axel Dahlberg'
 
@@ -38,6 +38,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.intersphinx',
     'sphinx.ext.doctest',
+    'nbsphinx',
 ]
 napoleon_include_init_with_doc = True
 autodoc_member_order = 'bysource'

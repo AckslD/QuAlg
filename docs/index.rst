@@ -3,15 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to qualg's documentation!
+Welcome to QuAlg's documentation!
 ============================================
+
+QuAlg is a package for working with symbolic algebra in quantum mechanics.
+Best way to get started is to first checkout the quickstart-guide below.
+Below is also the full API documentation.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    installation
-   usage
+   quickstart
    api
 
 

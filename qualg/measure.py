@@ -44,7 +44,6 @@ def measure(state, kraus_ops):
         if not isinstance(kraus_op, Operator):
             raise TypeError("the values of kraus_ops should be Operator")
         post_state = kraus_op * state
-        print(post_state)
         p = post_state.inner_product(post_state)
         if not is_number(p):
             raise NotImplementedError("Cannot perform measurement when inner product are not numbers")
