@@ -245,12 +245,24 @@ class Operator:
 
         return vars
 
-    def to_numpy_matrix(self, convert_scalars=None):
+    def to_numpy_matrix(self, convert_scalars=None, **kwargs):
         """Converts the operator to a numpy matrix.
 
         If there are non-number scalars then the provided function `convert_scalars`
         is used to convert a non-number scalar to a number.
-        This function should then take a scalar and return a number.
+        This function should then take a scalar (plus optional keyword arguments) and return a number.
+
+        Parameters
+        ----------
+        convert_scalars : function
+            Function to convert a non-number scalar to a number.
+        **kwargs:
+            Keyword-arguments to be passed to `convert_scalars`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The operator in numerical matrix form.
         """
         matrix = np.zeros(self.shape)
         for base_op, scalar in self:
@@ -259,7 +271,7 @@ class Operator:
                 if convert_scalars is None:
                     raise ValueError("If the operator contains non-numbers, "
                                      "the function `convert_scalars` needs to be provided")
-                scalar = convert_scalars(scalar)
+                scalar = convert_scalars(scalar, **kwargs)
             matrix[index] = scalar
 
         return matrix
