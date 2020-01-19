@@ -42,7 +42,7 @@ examples:
 docs html:
 	@${MAKE} -C docs html
 
-bdist: _clean_dist
+build bdist: _clean_dist
 	@$(PYTHON3) setup.py bdist_wheel
 
 install: test-deps
