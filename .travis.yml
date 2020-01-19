@@ -1,4 +1,7 @@
 language: python
+addons:
+  apt_packages:
+    - pandoc
 branches:
   only:
   - master
