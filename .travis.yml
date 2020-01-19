@@ -1,44 +1,35 @@
 language: python
 branches:
   only:
-    - master
-    - develop
+  - master
+  - develop
 matrix:
   include:
-    # - name: Python 3.5 on Linux
-    #   python: 3.5
-    - name: Python 3.6 on Linux
-      python: 3.6
-      env:
-      - BUILD=True
-    # - name: Python 3.7 on Xenial Linux
-    #   python: 3.7
-    #   dist: xenial
-    # - name: Python 3.7 on macOS
-    #   os: osx
-    #   osx_image: xcode10.2
-    #   language: shell
-    #   env:
-    #   - PIPFLAG="--user"
+  - name: Python 3.6 on Linux
+    python: 3.6
+    env:
+    - BUILD=True
 before_install:
-  - make build
+- make build
 install:
-  - pip3 install dist/*.whl $PIPFLAG
+- pip3 install dist/*.whl $PIPFLAG
+- make test-deps
 script:
-  - make lint
-  - make tests
+- make lint
+- make tests
 before_deploy:
-  - cd docs
-  - make build
-  - cd ..
+- cd docs
+- make build
+- cd ..
 deploy:
+  matrix:
   - provider: pypi
     user: adahlberg
     password:
-      secure: SECURE_KEY
+      secure: iy/3ytZ309Gem8Z3jQ8aOlrYo4D5Z8kdOGiij71XsVJBrwn3zcB7CgdXqwVpmRVyHTFbPIyF1zjI1RsC0y4/pFah8XPR2nx4RoD5qIms2V/8QkxX6IpJW2yD4RdW36Vrlw/Bro/mt8wfvtJzdKxmY1AOOgOFfslZnwNvOFDQbmtivTf2j+2ILEaoYWyqMMm36f6EpP6olyZvxFBUCZoRZ98EVL2PaeYHBACE1Q9qthldYfumydHNP4cLDfBRZwL7OtFO7dDz9S/A9Ptnk69Sid+T5s4jKaGVCT9D6f0iUfR3FR8rFVIRNPg7/jGUuI5BDWtvlGVbBXM94TbdCNSi3s7xHQC3KxiXs0yhZdDsQ66lxP9i+MfGy9JlTH/6o+viNohenv+sAb2AwMVfPJr7AOWvCPJsx8k108z16PTrU3+UYYJbKuaqC2RufvWw1k7etrxs5osBkA8xRffTZpnRkCTWzc4KjPqNyTnQvHdbo75r8yc9pPau7iNNDgn4UtiHVx97q3SiSiv1rNWjX83IPn3MQHORGPnkSSodOoDTypmBKSFIR1RIVMFttTptwcXEjea2xBWTlqZVtyrlZfIEPQvPFlB5RTJoKO8DEhbm6YhSy048lP51Jg/iC7NgCgYvhuYEhanCMUptWJxoQOgORPtOj3O6pi3tCQviz8gmq2M=
     distributions: sdist bdist_wheel
     skip_existing: true
-    on: 
+    on:
       branch: master
       condition: "$BUILD = True"
   - provider: pages
@@ -52,4 +43,4 @@ deploy:
       condition: "$BUILD = True"
 env:
   global:
-    secure: SECURE_KEY
+  - secure: DJcTGPb8xqTSH60cm6Wwra9caZICrOn9BeyYOw68ZOg6ffY2mLb3cWB99QmGjEoZ96lxE8tpSlVsvGPKO7Wd32pak8od5UwCiDIQqHset6rglNFZnBd1ZS/piBDOD69S9k3fbSZ2PYXzKt6qEmsyATKUut6WuXfK81vhk2MnfpWSFGd3fo+gO85ZS7Y/tJLYQiSh/eprCXTDSYf5KK2xtRvQBzsDQ2YZY+u+KLxrbGsfjPXfZY0b1VZ4BkxsQGS2eOx0AQ96PrWuIv+ErvezmCN76P5+KqziiXqYTLnTU6v0M++ILQC4kJJP07WfZ7MocTkxmv9+03x8n/Yltx3Uwnba+9Q3TK2GdV0H30twhtql5sQl9+Zvkb6S7oMgLKVOSCSWkd/DqvTCRr7i9DGn/6+HrJ6U+XjuTpPtnHJAEgRsXsJRT52E83we2c2DEHZKOiLW1NNYWR6UkQYEf8PL9pjfqAuwljNyYf9OyhJXq4NG09LOnw1NGHNx198z7gEXT5vH7+GXkDk4WYPcWkM6JPUjB3JRnBlR4EJLMvpNwkVC54Oav4eD7cPnEhTtIlfKelz+x0R93exmlQox50BEoLQxKRIOBSSNM6FtU9Uuh18FhoANlAUFrsQ+8tf/ZQX3Sab6w3QoguNhNTkFh6c+iMEAb2KJqoxoTCXDBKoguis=
