@@ -7,7 +7,7 @@
     "# Quickstart\n",
     "Welcome to the quickstart guide of `QuAlg`. This guide will go over some of the basic functionalities of the `QuAlg`-package to get you started. If you wish to use this guide interactively you can find the jupyter notebook at https://github.com/AckslD/QuAlg/blob/master/docs/quickstart.ipynb.\n",
     "\n",
-    "The full API for the package can be found at https://acksld.github.io/qualg/api.html.\n",
+    "The full API for the package can be found at https://acksld.github.io/QuAlg/api.html.\n",
     "\n",
     "In this quickstart guide we will go over:\n",
     "\n",
@@ -16,7 +16,7 @@
     "* How to measure states.\n",
     "* ...\n",
     "\n",
-    "For a more elaborate and realistic usecase for `QuAlg`, see the example https://github.com/AckslD/QuAlg/blob/master/examples/exmaple_ll_povm.py which computes the POVMs used in the simulations of the paper https://arxiv.org/abs/1903.09778 which was preciously computed by hand."
+    "For a more elaborate and realistic usecase for `QuAlg`, see the example https://github.com/AckslD/QuAlg/blob/master/examples/example_ll_povm.py which computes the POVMs used in the simulations of the paper https://arxiv.org/abs/1903.09778 which was preciously computed by hand."
    ]
   },
   {
