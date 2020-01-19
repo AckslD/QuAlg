@@ -25,7 +25,6 @@ before_deploy:
 - make build
 - cd ..
 deploy:
-  matrix:
   - provider: pypi
     user: adahlberg
     password:
