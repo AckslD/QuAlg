@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>scalars &#8212; QuAlg 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="states" href="states.html" />
+    <link rel="prev" title="q_state" href="q_state.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-qualg.scalars">
+<span id="scalars"></span><h1>scalars<a class="headerlink" href="#module-qualg.scalars" title="Permalink to this headline">¶</a></h1>
+<p>Containing classes for various scalars.
+Used for example as output when taking inner-product of states.
+In particular when the output is not a number but a symbolic variable of function.</p>
+<dl class="function">
+<dt id="qualg.scalars.is_number">
+<code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">is_number</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.is_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if something is a number (int, float or complex)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="qualg.scalars.is_scalar">
+<code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">is_scalar</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.is_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if something is considered a scalar (number of <a class="reference internal" href="#qualg.scalars.Scalar" title="qualg.scalars.Scalar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scalar</span></code></a>)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.Scalar">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">Scalar</code><a class="headerlink" href="#qualg.scalars.Scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base-class for all scalars.</p>
+<p>Meant to be subclassed.</p>
+<dl class="method">
+<dt id="qualg.scalars.Scalar.has_variable">
+<code class="sig-name descname">has_variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Scalar.has_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if scalar depends on a given variable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.Scalar.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Scalar.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.Scalar.conjugate">
+<em class="property">abstract </em><code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Scalar.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.SingleVarFunctionScalar">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">SingleVarFunctionScalar</code><span class="sig-paren">(</span><em class="sig-param">func_name</em>, <em class="sig-param">variable</em>, <em class="sig-param">conjugate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.scalars.SingleVarFunctionScalar.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">func_name</em>, <em class="sig-param">variable</em>, <em class="sig-param">conjugate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a function with a single symbolic variable, e.g. f(x).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_name</strong> (<em>str</em>) – Name of function.</p></li>
+<li><p><strong>variable</strong> (<em>str</em>) – Name of variable.</p></li>
+<li><p><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>conjugate</em>) – If the functions is conjugated (default: <cite>False</cite>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SingleVarFunctionScalar.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SingleVarFunctionScalar.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SingleVarFunctionScalar.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SingleVarFunctionScalar.is_zero">
+<code class="sig-name descname">is_zero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SingleVarFunctionScalar.is_one">
+<code class="sig-name descname">is_one</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar.is_one" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SingleVarFunctionScalar.has_variable">
+<code class="sig-name descname">has_variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SingleVarFunctionScalar.has_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if scalar depends on a given variable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.InnerProductFunction">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">InnerProductFunction</code><span class="sig-paren">(</span><em class="sig-param">func_name1</em>, <em class="sig-param">func_name2</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.InnerProductFunction" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.scalars.InnerProductFunction.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">func_name1</em>, <em class="sig-param">func_name2</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.InnerProductFunction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the inner product of two functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func_name1</strong> (<em>str</em>) – Name of first function</p></li>
+<li><p><strong>func_name2</strong> (<em>str</em>) – Name of second function</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.InnerProductFunction.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.InnerProductFunction.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.InnerProductFunction.is_zero">
+<code class="sig-name descname">is_zero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.InnerProductFunction.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.InnerProductFunction.is_one">
+<code class="sig-name descname">is_one</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.InnerProductFunction.is_one" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.DeltaFunction">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">DeltaFunction</code><span class="sig-paren">(</span><em class="sig-param">var1</em>, <em class="sig-param">var2</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.scalars.DeltaFunction.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">var1</em>, <em class="sig-param">var2</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delta function between two variables, e.g. d(x - y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var1</strong> (<em>str</em>) – First variable</p></li>
+<li><p><strong>var2</strong> (<em>str</em>) – First variable</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.DeltaFunction.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.DeltaFunction.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.DeltaFunction.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.DeltaFunction.is_zero">
+<code class="sig-name descname">is_zero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.DeltaFunction.is_one">
+<code class="sig-name descname">is_one</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction.is_one" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.DeltaFunction.has_variable">
+<code class="sig-name descname">has_variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.DeltaFunction.has_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if scalar depends on a given variable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.ProductOfScalars">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">ProductOfScalars</code><span class="sig-paren">(</span><em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Product of some number of scalars.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scalars</strong> (None or list of <code class="xref py py-class docutils literal notranslate"><span class="pre">scalar</span></code>) – The factors of the product.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.atoms">
+<code class="sig-name descname">atoms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.expand">
+<code class="sig-name descname">expand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.expand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.is_zero">
+<code class="sig-name descname">is_zero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.is_one">
+<code class="sig-name descname">is_one</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.is_one" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.simplify">
+<code class="sig-name descname">simplify</code><span class="sig-paren">(</span><em class="sig-param">full=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.simplify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.ProductOfScalars.has_variable">
+<code class="sig-name descname">has_variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.ProductOfScalars.has_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if scalar depends on a given variable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.SumOfScalars">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">SumOfScalars</code><span class="sig-paren">(</span><em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.scalars.SumOfScalars.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum of some number of scalars.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scalars</strong> (None or list of <code class="xref py py-class docutils literal notranslate"><span class="pre">scalar</span></code>) – The terms of the sum.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.atoms">
+<code class="sig-name descname">atoms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.atoms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.is_zero">
+<code class="sig-name descname">is_zero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.expand">
+<code class="sig-name descname">expand</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.expand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.simplify">
+<code class="sig-name descname">simplify</code><span class="sig-paren">(</span><em class="sig-param">full=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.simplify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.SumOfScalars.has_variable">
+<code class="sig-name descname">has_variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.SumOfScalars.has_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if scalar depends on a given variable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qualg.scalars.assert_is_scalar">
+<code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">assert_is_scalar</code><span class="sig-paren">(</span><em class="sig-param">n</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.assert_is_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that something is a scalar</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">QuAlg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fock_state.html">fock_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrate.html">integrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_state.html">q_state</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">scalars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="states.html">states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.html">toolbox</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API</a><ul>
+      <li>Previous: <a href="q_state.html" title="previous chapter">q_state</a></li>
+      <li>Next: <a href="states.html" title="next chapter">states</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axel Dahlberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/modules/scalars.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

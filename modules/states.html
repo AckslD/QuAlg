@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>states &#8212; QuAlg 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="toolbox" href="toolbox.html" />
+    <link rel="prev" title="scalars" href="scalars.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-qualg.states">
+<span id="states"></span><h1>states<a class="headerlink" href="#module-qualg.states" title="Permalink to this headline">¶</a></h1>
+<p>Module for representing quantum states.</p>
+<p>The <a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>-class is intended to be subclassed for different types of states,
+e.g. qubit states, qudit states, fock states etc.</p>
+<p>The <a class="reference internal" href="#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>-class is then a sum of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code>-class
+in the sum.</p>
+<dl class="class">
+<dt id="qualg.states.BaseState">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.states.</code><code class="sig-name descname">BaseState</code><a class="headerlink" href="#qualg.states.BaseState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base state class.
+Represents a single term of state and used to define how inner product should be taken etc.</p>
+<p>Meant to be subclassed.</p>
+<dl class="method">
+<dt id="qualg.states.BaseState.inner_product">
+<em class="property">abstract </em><code class="sig-name descname">inner_product</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.BaseState.inner_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the inner product with another <a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – The right hand side of the inner product.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The inner product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>class`~.scalar.Scalar`</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.BaseState.tensor_product">
+<em class="property">abstract </em><code class="sig-name descname">tensor_product</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.BaseState.tensor_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the tensor product with another <a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – The right hand side of the tensor product.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The tensor product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.BaseState.to_state">
+<code class="sig-name descname">to_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.BaseState.to_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the base state to a state with a single term.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.BaseState.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#qualg.states.BaseState.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the shape of the state, e.q. (2,) for a qubit.</p>
+<p><cite>None</cite> means that the shape is undefined, e.g. if the state is infinite-dimensional.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.states.State">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.states.</code><code class="sig-name descname">State</code><span class="sig-paren">(</span><em class="sig-param">base_states=None</em>, <em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.states.State.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">base_states=None</em>, <em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A quantum state.
+Constructed as a sum of (subclass) <a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_states</strong> (None or list of <a class="reference internal" href="#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – The base states that sums up to this state.
+If <cite>None</cite>, then the state is “zero”, i.e. no terms.</p></li>
+<li><p><strong>scalar</strong> (None or list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Scalar</span></code>) – The amplitudes used when taking the sum of base states.
+If <cite>None</cite>, then all operators have amplitude 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.State.get_scalar">
+<code class="sig-name descname">get_scalar</code><span class="sig-paren">(</span><em class="sig-param">base_state</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State.get_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the scalar of the given base_state</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.State.inner_product">
+<code class="sig-name descname">inner_product</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">first_replace_var=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State.inner_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the inner product with another <a class="reference internal" href="#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (<a class="reference internal" href="#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>) – The right hand side of the inner product.</p></li>
+<li><p><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>first_replace_var</em>) – Whether to replace all varibles of the right hand side with
+new ones. This can be useful when the two states are actually integrals
+over the variables and should therefore be different.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The inner product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>class`~.scalar.Scalar`</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.State.tensor_product">
+<code class="sig-name descname">tensor_product</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State.tensor_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the tensor product with another <a class="reference internal" href="#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>) – The right hand side of the tensor product.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The tensor product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.State.simplify">
+<code class="sig-name descname">simplify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State.simplify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to simplify the state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.State.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces a variable with another.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.states.State.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.states.State.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">QuAlg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fock_state.html">fock_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrate.html">integrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_state.html">q_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalars.html">scalars</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.html">toolbox</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API</a><ul>
+      <li>Previous: <a href="scalars.html" title="previous chapter">scalars</a></li>
+      <li>Next: <a href="toolbox.html" title="next chapter">toolbox</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axel Dahlberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/modules/states.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

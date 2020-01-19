@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>measure &#8212; QuAlg 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="integrate" href="integrate.html" />
+    <link rel="prev" title="fock_state" href="fock_state.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-qualg.measure">
+<span id="measure"></span><h1>measure<a class="headerlink" href="#module-qualg.measure" title="Permalink to this headline">¶</a></h1>
+<p>Contains function <a class="reference internal" href="#qualg.measure.measure" title="qualg.measure.measure"><code class="xref py py-func docutils literal notranslate"><span class="pre">measure()</span></code></a> for measuring states</p>
+<dl class="class">
+<dt id="qualg.measure.MeasurementResult">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.measure.</code><code class="sig-name descname">MeasurementResult</code><span class="sig-paren">(</span><em class="sig-param">outcome</em>, <em class="sig-param">probability</em>, <em class="sig-param">post_meas_state</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.measure.MeasurementResult" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.measure.MeasurementResult.outcome">
+<em class="property">property </em><code class="sig-name descname">outcome</code><a class="headerlink" href="#qualg.measure.MeasurementResult.outcome" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.measure.MeasurementResult.post_meas_state">
+<em class="property">property </em><code class="sig-name descname">post_meas_state</code><a class="headerlink" href="#qualg.measure.MeasurementResult.post_meas_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.measure.MeasurementResult.probability">
+<em class="property">property </em><code class="sig-name descname">probability</code><a class="headerlink" href="#qualg.measure.MeasurementResult.probability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qualg.measure.measure">
+<code class="sig-prename descclassname">qualg.measure.</code><code class="sig-name descname">measure</code><span class="sig-paren">(</span><em class="sig-param">state</em>, <em class="sig-param">kraus_ops</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.measure.measure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Measures a state with a given list of Kraus operators describing a POVM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<a class="reference internal" href="states.html#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>) – The state to be measured.</p></li>
+<li><p><strong>kraus_ops</strong> (<em>dict</em>) – Dictionary containing the Kraus operators describing the POVM as values and
+the outcomes as keys.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The namedtuple returned contains:
+* <cite>outcome</cite>: The outcome of the measurement, i.e. the key of the Kraus operator.
+* <cite>probability</cite>: The probability of the outcome.
+* <cite>post_meas_state</cite>: The post-measurement state.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qualg.measure.MeasurementResult" title="qualg.measure.MeasurementResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeasurementResult</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>There is no check that the given Kraus operators are actually a valid POVM.</p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">QuAlg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fock_state.html">fock_state</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrate.html">integrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_state.html">q_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalars.html">scalars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="states.html">states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.html">toolbox</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API</a><ul>
+      <li>Previous: <a href="fock_state.html" title="previous chapter">fock_state</a></li>
+      <li>Next: <a href="integrate.html" title="next chapter">integrate</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axel Dahlberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/modules/measure.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

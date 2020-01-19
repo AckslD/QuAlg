@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>fock_state &#8212; QuAlg 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="measure" href="measure.html" />
+    <link rel="prev" title="API" href="../api.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-qualg.fock_state">
+<span id="fock-state"></span><h1>fock_state<a class="headerlink" href="#module-qualg.fock_state" title="Permalink to this headline">¶</a></h1>
+<p>Contains classes for representing in excited states of some bosonic mode.
+The creation/annihilation operators have a symbolic variable which can for example
+be the frequency of the excited state.</p>
+<dl class="class">
+<dt id="qualg.fock_state.FockOp">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.fock_state.</code><code class="sig-name descname">FockOp</code><span class="sig-paren">(</span><em class="sig-param">mode</em>, <em class="sig-param">variable</em>, <em class="sig-param">creation=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.fock_state.FockOp.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">mode</em>, <em class="sig-param">variable</em>, <em class="sig-param">creation=True</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOp.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents an creation/annihilation operator in a given mode with a given variable
+representing for example the frequency of the excitation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>str</em>) – The mode of the excitation</p></li>
+<li><p><strong>variable</strong> (<em>str</em>) – The variable describing the continous variable</p></li>
+<li><p><strong>creation</strong> (<em>bool</em>) – Whether this is a creation operator or not (annihilation).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOp.dagger">
+<code class="sig-name descname">dagger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOp.dagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate of the operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOp.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOp.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces a variable with another.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOp.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOp.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.fock_state.FockOpProduct">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.fock_state.</code><code class="sig-name descname">FockOpProduct</code><span class="sig-paren">(</span><em class="sig-param">fock_ops=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOpProduct" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.fock_state.FockOpProduct.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">fock_ops=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOpProduct.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A product of excitation operators (<a class="reference internal" href="#qualg.fock_state.FockOp" title="qualg.fock_state.FockOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">FockOp</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fock_ops</strong> (list of <a class="reference internal" href="#qualg.fock_state.FockOp" title="qualg.fock_state.FockOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">FockOp</span></code></a>) – The product of fock operators.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOpProduct.dagger">
+<code class="sig-name descname">dagger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOpProduct.dagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate of the operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOpProduct.variables_in_mode">
+<code class="sig-name descname">variables_in_mode</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOpProduct.variables_in_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the variables in a given mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOpProduct.variables_by_modes">
+<code class="sig-name descname">variables_by_modes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOpProduct.variables_by_modes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dictionay of variables per modes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOpProduct.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOpProduct.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces a variable with another.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.FockOpProduct.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.FockOpProduct.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.fock_state.BaseFockState">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.fock_state.</code><code class="sig-name descname">BaseFockState</code><span class="sig-paren">(</span><em class="sig-param">fock_ops=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.BaseFockState" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.fock_state.BaseFockState.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">fock_ops=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.BaseFockState.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A base state represented by excitations from vacuum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fock_ops</strong> (<a class="reference internal" href="#qualg.fock_state.FockOpProduct" title="qualg.fock_state.FockOpProduct"><code class="xref py py-class docutils literal notranslate"><span class="pre">FockOpProduct</span></code></a> or list of <a class="reference internal" href="#qualg.fock_state.FockOp" title="qualg.fock_state.FockOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">FockOp</span></code></a>) – The product of fock operators.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.BaseFockState.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#qualg.fock_state.BaseFockState.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the shape of the state, e.q. (2,) for a qubit.</p>
+<p><cite>None</cite> means that the shape is undefined, e.g. if the state is infinite-dimensional.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.BaseFockState.inner_product">
+<code class="sig-name descname">inner_product</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.BaseFockState.inner_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the inner product with another <a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – The right hand side of the inner product.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The inner product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>class`~.scalar.Scalar`</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.BaseFockState.tensor_product">
+<code class="sig-name descname">tensor_product</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.BaseFockState.tensor_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the tensor product with another <a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – The right hand side of the tensor product.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The tensor product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.BaseFockState.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.BaseFockState.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces a variable with another.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.fock_state.BaseFockState.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.BaseFockState.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qualg.fock_state.assert_fock_op">
+<code class="sig-prename descclassname">qualg.fock_state.</code><code class="sig-name descname">assert_fock_op</code><span class="sig-paren">(</span><em class="sig-param">op</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.fock_state.assert_fock_op" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that an object is a fock operator.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">QuAlg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">fock_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrate.html">integrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_state.html">q_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalars.html">scalars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="states.html">states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.html">toolbox</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API</a><ul>
+      <li>Previous: <a href="../api.html" title="previous chapter">API</a></li>
+      <li>Next: <a href="measure.html" title="next chapter">measure</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axel Dahlberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/modules/fock_state.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,708 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Quickstart\n",
+    "Welcome to the quickstart guide of `QuAlg`. This guide will go over some of the basic functionalities of the `QuAlg`-package to get you started. If you wish to use this guide interactively you can find the jupyter notebook at https://github.com/AckslD/QuAlg/blob/master/docs/quickstart.ipynb.\n",
+    "\n",
+    "The full API for the package can be found at https://acksld.github.io/qualg/api.html.\n",
+    "\n",
+    "In this quickstart guide we will go over:\n",
+    "\n",
+    "* How to create and work with quantum states of different types.\n",
+    "* How to create and work with operators.\n",
+    "* How to measure states.\n",
+    "* ...\n",
+    "\n",
+    "For a more elaborate and realistic usecase for `QuAlg`, see the example https://github.com/AckslD/QuAlg/blob/master/examples/exmaple_ll_povm.py which computes the POVMs used in the simulations of the paper https://arxiv.org/abs/1903.09778 which was preciously computed by hand."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## States\n",
+    "### Single-qubit state\n",
+    "We first look at how one can create qubit states:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "from qualg.q_state import BaseQubitState"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "A `BaseQuditState` (subclass of `BaseState`) represents a single term in a quantum state and can be used to build a basis for such."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "|0>\n",
+      "|1>\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create a basis for single-qubit states\n",
+    "bs = [BaseQubitState(f\"{i}\") for i in range(2)]\n",
+    "print(bs[0])\n",
+    "print(bs[1])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Using these base states we can construct arbitary states. To do so we first need to make these base states actual states, which we can then add together to construct superpositions of such."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "s0 = bs[0].to_state()\n",
+    "s1 = bs[1].to_state()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Lets now for example construct the state $|+\\rangle=\\frac{1}{2}(|0\\rangle+|1\\rangle)$:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.7071067811865475*|0> + 0.7071067811865475*|1>\n"
+     ]
+    }
+   ],
+   "source": [
+    "h0 = (s0 + s1) * (1 / np.sqrt(2))\n",
+    "print(h0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "As you will see when working with `QuAlg` is that all objects have a nice string-representation and can be printed. This is one of the aims of `QuAlg`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Multi-qudit states\n",
+    "Lets say that we instead would like to work with states on two qutrits. We can easily do this as follows:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from itertools import product\n",
+    "from qualg.states import State\n",
+    "from qualg.q_state import BaseQuditState"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "|00>\n",
+      "|22>\n"
+     ]
+    }
+   ],
+   "source": [
+    "levels = 3\n",
+    "bs = [BaseQuditState(f\"{i}{j}\", base=levels) for i, j in product(range(levels), range(levels))]\n",
+    "print(bs[0])\n",
+    "print(bs[-1])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Feel free to change the number of levels above. Similarly to before we can now construct superpositions of these base states:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.3333333333333333*|00> + 0.3333333333333333*|01> + 0.3333333333333333*|02> + 0.3333333333333333*|10> + 0.3333333333333333*|11> + 0.3333333333333333*|12> + 0.3333333333333333*|20> + 0.3333333333333333*|21> + 0.3333333333333333*|22>\n"
+     ]
+    }
+   ],
+   "source": [
+    "superpos = sum([b.to_state() for b in bs], State()) * (1 / levels)\n",
+    "print(superpos)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Fock states\n",
+    "We can also work with states in second quantization, where these are represented as excitations of some given mode. To do this we first need to define our creation operators:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qualg.fock_state import FockOp, FockOpProduct, BaseFockState"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "a+(w)\n"
+     ]
+    }
+   ],
+   "source": [
+    "aw = FockOp('a', 'w')\n",
+    "print(aw)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We have define a creation operator of in mode `a` and with variable `w` (e.g. frequency). We can then use this to define the state where this operator acts on the vacuum:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "a+(w)^1|0>\n"
+     ]
+    }
+   ],
+   "source": [
+    "s = BaseFockState([aw])\n",
+    "print(s)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Lets see what happens when we take inner products of these fock states."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "D[w-v]\n"
+     ]
+    }
+   ],
+   "source": [
+    "aw = FockOp('a', 'w')\n",
+    "av = FockOp('a', 'v')\n",
+    "saw = BaseFockState([aw])\n",
+    "sav = BaseFockState([av])\n",
+    "print(saw.inner_product(sav))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Hey! That's pretty cool, we got a delta function with the variables `w` and `v`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Lets look at a more complicated example where we have states which are superpositions over modes defined by a wavepacket. For example let's say we have one state with the wave-packet `phi` and the other with `phi` as follows:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qualg.scalars import SingleVarFunctionScalar"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "phi(w)*a+(w)^1|0>\n",
+      "psi(w)*a+(w)^1|0>\n"
+     ]
+    }
+   ],
+   "source": [
+    "phi = SingleVarFunctionScalar(\"phi\", 'w')\n",
+    "psi = SingleVarFunctionScalar(\"psi\", \"w\")\n",
+    "s_phi = phi * saw.to_state()\n",
+    "s_psi = psi * saw.to_state()\n",
+    "print(s_phi)\n",
+    "print(s_psi)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can now take the inner product of these two states:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "phi*(w)*psi(w')*D[w-w']\n"
+     ]
+    }
+   ],
+   "source": [
+    "inp = s_phi.inner_product(s_psi)\n",
+    "print(inp)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "What is then left to do is to integrate out this expression since there are integrals from the states which we left out until now:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qualg.integrate import integrate"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "<phi|psi>\n"
+     ]
+    }
+   ],
+   "source": [
+    "integrated_inp = integrate(inp)\n",
+    "print(integrated_inp)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "What's this? Looks like an inner-product between functions. That's exactly what it is. We can see this more clearly by writing out the representation of the state:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "InnerProductFunction('phi', 'psi')\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(repr(integrated_inp))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "So we have found that the inner-product of these two states is exactly the inner-product of the wave-packets describing the states."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Operators\n",
+    "Operators work very much like states in that there is a `BaseOperator`-class which represents the terms of an `Operator`. A `BaseOperator` is described by a left and right `BaseState`, i.e. $|left\\rangle\\langle right|$."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qualg.operators import BaseOperator, Operator, outer_product"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Single-qubit operators\n",
+    "Let's start with creating some single-qubit base operators."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Op[|0><0|]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create a basis for single-qubit states\n",
+    "bs = [BaseQuditState(f\"{i}\") for i in range(2)]\n",
+    "\n",
+    "bp0 = BaseOperator(bs[0], bs[0])\n",
+    "print(bp0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can from a `BaseOperator` create an `Operator` as:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1*Op[|0><0|]\n"
+     ]
+    }
+   ],
+   "source": [
+    "p0 = bp0.to_operator()\n",
+    "print(p0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Lets say we want to create the Hadamard operation, we can then make use of the `outer_product` function:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.7071067811865475*Op[|0><0|] + 0.7071067811865475*Op[|1><0|] + 0.7071067811865475*Op[|0><1|] + -0.7071067811865475*Op[|1><1|]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create standard and Hadamard basis states\n",
+    "s0 = bs[0].to_state()\n",
+    "s1 = bs[1].to_state()\n",
+    "h0 = (s0 + s1) * (1 / np.sqrt(2))\n",
+    "h1 = (s0 - s1) * (1 / np.sqrt(2))\n",
+    "\n",
+    "# Create Hadamard gate\n",
+    "h = outer_product(h0, s0) + outer_product(h1, s1)\n",
+    "print(h)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can now let this operator act on a state:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.7071067811865475*|0> + 0.7071067811865475*|1>\n",
+      "0.9999999999999998*|0>\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(h * s0)\n",
+    "print(h * h0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### General operators\n",
+    "We can also create operators acting on non-qubit states but also operators taking a state in some Hilbert-space to another.\n",
+    "\n",
+    "For example let's define an operator from a qubit to a fock state:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1*Op[a+(w)^1|0><0|] + 1*Op[b+(w)^1|0><1|]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create standard basis states\n",
+    "bs = [BaseQuditState(f\"{i}\") for i in range(2)]\n",
+    "s0 = bs[0].to_state()\n",
+    "s1 = bs[1].to_state()\n",
+    "\n",
+    "# Create two fock states in different modes\n",
+    "a = FockOp('a', 'w')\n",
+    "b = FockOp('b', 'w')\n",
+    "fs0 = BaseFockState([a]).to_state()\n",
+    "fs1 = BaseFockState([b]).to_state()\n",
+    "\n",
+    "# Create an operator from a qubit state to a fock state\n",
+    "op = outer_product(fs0, s0) + outer_product(fs1, s1)\n",
+    "print(op)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Measuring\n",
+    "We can use what we have learned about states and operators to now also measure states given a set of measurement operators. We can create general POVM measurement but we will here for simplicity only perform a measurement in the standard single-qubit basis. However general POVMs work in the same way.\n",
+    "\n",
+    "To perform a measuremnt we first need to define the Kraus operators that define the measuremnent:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from qualg.measure import measure"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To perform a measurement we first need to define the Kraus operators that define the measurement:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Create single-qubit states\n",
+    "s0 = BaseQubitState(\"0\").to_state()\n",
+    "s1 = BaseQubitState(\"1\").to_state()\n",
+    "# Create Hadamard basis state\n",
+    "h0 = (s0 + s1) * (1 / np.sqrt(2))\n",
+    "\n",
+    "# Create a projective measurement\n",
+    "P0 = outer_product(s0, s0)\n",
+    "P1 = outer_product(s1, s1)\n",
+    "kraus_ops = {0: P0, 1: P1}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "What we pass into the measure-function is a dictionary where the keys are the measurement outcomes and the values the Kraus operators. Note that there is not check that the operators actually form a valid POVM.\n",
+    "\n",
+    "Lets now measure some states and see that we get (run the below examples multiple times to see that happens):"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "MeasurementResult(outcome=0, probability=1, post_meas_state=State([(BaseQubitState('0'), 1.0)]))\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Measure |0>\n",
+    "meas_res = measure(s0, kraus_ops)\n",
+    "print(meas_res)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "MeasurementResult(outcome=1, probability=1, post_meas_state=State([(BaseQubitState('1'), 1.0)]))\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Measure |1>\n",
+    "meas_res = measure(s1, kraus_ops)\n",
+    "print(meas_res)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "MeasurementResult(outcome=1, probability=0.4999999999999999, post_meas_state=State([(BaseQubitState('1'), 1.0)]))\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Measure |+>\n",
+    "meas_res = measure(h0, kraus_ops)\n",
+    "print(meas_res)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

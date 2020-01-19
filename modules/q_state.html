@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>q_state &#8212; QuAlg 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="scalars" href="scalars.html" />
+    <link rel="prev" title="operators" href="operators.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-qualg.q_state">
+<span id="q-state"></span><h1>q_state<a class="headerlink" href="#module-qualg.q_state" title="Permalink to this headline">¶</a></h1>
+<p>Contains classes for qubit and qubit base states.</p>
+<dl class="class">
+<dt id="qualg.q_state.BaseQuditState">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.q_state.</code><code class="sig-name descname">BaseQuditState</code><span class="sig-paren">(</span><em class="sig-param">digits</em>, <em class="sig-param">base=2</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.q_state.BaseQuditState" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.q_state.BaseQuditState.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">digits</em>, <em class="sig-param">base=2</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.q_state.BaseQuditState.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A qudit base state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>digits</strong> (<em>str</em>) – A string of the digits representing the base state, e.g “010”.
+Which digits in the range 0..(base-1).</p></li>
+<li><p><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>base</em>) – How many basis states there are per position, e.g. 2 (defualt) for qubits.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.q_state.BaseQuditState.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#qualg.q_state.BaseQuditState.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the shape of the state, e.q. (2,) for a qubit.</p>
+<p><cite>None</cite> means that the shape is undefined, e.g. if the state is infinite-dimensional.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.q_state.BaseQuditState.inner_product">
+<code class="sig-name descname">inner_product</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.q_state.BaseQuditState.inner_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the inner product with another <a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – The right hand side of the inner product.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The inner product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>class`~.scalar.Scalar`</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.q_state.BaseQuditState.tensor_product">
+<code class="sig-name descname">tensor_product</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.q_state.BaseQuditState.tensor_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes the tensor product with another <a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – The right hand side of the tensor product.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The tensor product</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.q_state.BaseQuditState.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.q_state.BaseQuditState.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.q_state.BaseQubitState">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.q_state.</code><code class="sig-name descname">BaseQubitState</code><span class="sig-paren">(</span><em class="sig-param">digits</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.q_state.BaseQubitState" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.q_state.BaseQubitState.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">digits</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.q_state.BaseQubitState.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>A qubit base state. (same as <a class="reference internal" href="#qualg.q_state.BaseQuditState" title="qualg.q_state.BaseQuditState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseQuditState</span></code></a> except that ‘base’ is fixed to 2)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>digits</strong> (<em>str</em>) – A string of the digits representing the base state, e.g “010”.
+Which digits in the range 0..1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">QuAlg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fock_state.html">fock_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrate.html">integrate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html">operators</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">q_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalars.html">scalars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="states.html">states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.html">toolbox</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API</a><ul>
+      <li>Previous: <a href="operators.html" title="previous chapter">operators</a></li>
+      <li>Next: <a href="scalars.html" title="next chapter">scalars</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axel Dahlberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/modules/q_state.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

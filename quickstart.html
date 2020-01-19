@@ -1,0 +1,855 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quickstart &#8212; QuAlg 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Installation" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    min-width: 5ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Quickstart">
+<h1>Quickstart<a class="headerlink" href="#Quickstart" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to the quickstart guide of <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code>. This guide will go over some of the basic functionalities of the <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code>-package to get you started. If you wish to use this guide interactively you can find the jupyter notebook at <a class="reference external" href="https://github.com/AckslD/QuAlg/blob/master/docs/quickstart.ipynb">https://github.com/AckslD/QuAlg/blob/master/docs/quickstart.ipynb</a>.</p>
+<p>The full API for the package can be found at <a class="reference external" href="https://acksld.github.io/qualg/api.html">https://acksld.github.io/qualg/api.html</a>.</p>
+<p>In this quickstart guide we will go over:</p>
+<ul class="simple">
+<li><p>How to create and work with quantum states of different types.</p></li>
+<li><p>How to create and work with operators.</p></li>
+<li><p>How to measure states.</p></li>
+<li><p>…</p></li>
+</ul>
+<p>For a more elaborate and realistic usecase for <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code>, see the example <a class="reference external" href="https://github.com/AckslD/QuAlg/blob/master/examples/exmaple_ll_povm.py">https://github.com/AckslD/QuAlg/blob/master/examples/exmaple_ll_povm.py</a> which computes the POVMs used in the simulations of the paper <a class="reference external" href="https://arxiv.org/abs/1903.09778">https://arxiv.org/abs/1903.09778</a> which was preciously computed by hand.</p>
+<div class="section" id="States">
+<h2>States<a class="headerlink" href="#States" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Single-qubit-state">
+<h3>Single-qubit state<a class="headerlink" href="#Single-qubit-state" title="Permalink to this headline">¶</a></h3>
+<p>We first look at how one can create qubit states:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>import numpy as np
+from qualg.q_state import BaseQubitState
+</pre></div>
+</div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">BaseQuditState</span></code> (subclass of <code class="docutils literal notranslate"><span class="pre">BaseState</span></code>) represents a single term in a quantum state and can be used to build a basis for such.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Create a basis for single-qubit states
+bs = [BaseQubitState(f&quot;{i}&quot;) for i in range(2)]
+print(bs[0])
+print(bs[1])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+|0&gt;
+|1&gt;
+</pre></div></div>
+</div>
+<p>Using these base states we can construct arbitary states. To do so we first need to make these base states actual states, which we can then add together to construct superpositions of such.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>s0 = bs[0].to_state()
+s1 = bs[1].to_state()
+</pre></div>
+</div>
+</div>
+<p>Lets now for example construct the state <span class="math notranslate nohighlight">\(|+\rangle=\frac{1}{2}(|0\rangle+|1\rangle)\)</span>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>h0 = (s0 + s1) * (1 / np.sqrt(2))
+print(h0)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.7071067811865475*|0&gt; + 0.7071067811865475*|1&gt;
+</pre></div></div>
+</div>
+<p>As you will see when working with <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code> is that all objects have a nice string-representation and can be printed. This is one of the aims of <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code>.</p>
+</div>
+<div class="section" id="Multi-qudit-states">
+<h3>Multi-qudit states<a class="headerlink" href="#Multi-qudit-states" title="Permalink to this headline">¶</a></h3>
+<p>Lets say that we instead would like to work with states on two qutrits. We can easily do this as follows:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from itertools import product
+from qualg.states import State
+from qualg.q_state import BaseQuditState
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>levels = 3
+bs = [BaseQuditState(f&quot;{i}{j}&quot;, base=levels) for i, j in product(range(levels), range(levels))]
+print(bs[0])
+print(bs[-1])
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+|00&gt;
+|22&gt;
+</pre></div></div>
+</div>
+<p>Feel free to change the number of levels above. Similarly to before we can now construct superpositions of these base states:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>superpos = sum([b.to_state() for b in bs], State()) * (1 / levels)
+print(superpos)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.3333333333333333*|00&gt; + 0.3333333333333333*|01&gt; + 0.3333333333333333*|02&gt; + 0.3333333333333333*|10&gt; + 0.3333333333333333*|11&gt; + 0.3333333333333333*|12&gt; + 0.3333333333333333*|20&gt; + 0.3333333333333333*|21&gt; + 0.3333333333333333*|22&gt;
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Fock-states">
+<h3>Fock states<a class="headerlink" href="#Fock-states" title="Permalink to this headline">¶</a></h3>
+<p>We can also work with states in second quantization, where these are represented as excitations of some given mode. To do this we first need to define our creation operators:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from qualg.fock_state import FockOp, FockOpProduct, BaseFockState
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>aw = FockOp(&#39;a&#39;, &#39;w&#39;)
+print(aw)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+a+(w)
+</pre></div></div>
+</div>
+<p>We have define a creation operator of in mode <code class="docutils literal notranslate"><span class="pre">a</span></code> and with variable <code class="docutils literal notranslate"><span class="pre">w</span></code> (e.g. frequency). We can then use this to define the state where this operator acts on the vacuum:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>s = BaseFockState([aw])
+print(s)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+a+(w)^1|0&gt;
+</pre></div></div>
+</div>
+<p>Lets see what happens when we take inner products of these fock states.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>aw = FockOp(&#39;a&#39;, &#39;w&#39;)
+av = FockOp(&#39;a&#39;, &#39;v&#39;)
+saw = BaseFockState([aw])
+sav = BaseFockState([av])
+print(saw.inner_product(sav))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+D[w-v]
+</pre></div></div>
+</div>
+<p>Hey! That’s pretty cool, we got a delta function with the variables <code class="docutils literal notranslate"><span class="pre">w</span></code> and <code class="docutils literal notranslate"><span class="pre">v</span></code>.</p>
+<p>Lets look at a more complicated example where we have states which are superpositions over modes defined by a wavepacket. For example let’s say we have one state with the wave-packet <code class="docutils literal notranslate"><span class="pre">phi</span></code> and the other with <code class="docutils literal notranslate"><span class="pre">phi</span></code> as follows:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from qualg.scalars import SingleVarFunctionScalar
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>phi = SingleVarFunctionScalar(&quot;phi&quot;, &#39;w&#39;)
+psi = SingleVarFunctionScalar(&quot;psi&quot;, &quot;w&quot;)
+s_phi = phi * saw.to_state()
+s_psi = psi * saw.to_state()
+print(s_phi)
+print(s_psi)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+phi(w)*a+(w)^1|0&gt;
+psi(w)*a+(w)^1|0&gt;
+</pre></div></div>
+</div>
+<p>We can now take the inner product of these two states:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>inp = s_phi.inner_product(s_psi)
+print(inp)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+phi*(w)*psi(w&#39;)*D[w-w&#39;]
+</pre></div></div>
+</div>
+<p>What is then left to do is to integrate out this expression since there are integrals from the states which we left out until now:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from qualg.integrate import integrate
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>integrated_inp = integrate(inp)
+print(integrated_inp)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;phi|psi&gt;
+</pre></div></div>
+</div>
+<p>What’s this? Looks like an inner-product between functions. That’s exactly what it is. We can see this more clearly by writing out the representation of the state:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>print(repr(integrated_inp))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+InnerProductFunction(&#39;phi&#39;, &#39;psi&#39;)
+</pre></div></div>
+</div>
+<p>So we have found that the inner-product of these two states is exactly the inner-product of the wave-packets describing the states.</p>
+</div>
+</div>
+<div class="section" id="Operators">
+<h2>Operators<a class="headerlink" href="#Operators" title="Permalink to this headline">¶</a></h2>
+<p>Operators work very much like states in that there is a <code class="docutils literal notranslate"><span class="pre">BaseOperator</span></code>-class which represents the terms of an <code class="docutils literal notranslate"><span class="pre">Operator</span></code>. A <code class="docutils literal notranslate"><span class="pre">BaseOperator</span></code> is described by a left and right <code class="docutils literal notranslate"><span class="pre">BaseState</span></code>, i.e. <span class="math notranslate nohighlight">\(|left\rangle\langle right|\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from qualg.operators import BaseOperator, Operator, outer_product
+</pre></div>
+</div>
+</div>
+<div class="section" id="Single-qubit-operators">
+<h3>Single-qubit operators<a class="headerlink" href="#Single-qubit-operators" title="Permalink to this headline">¶</a></h3>
+<p>Let’s start with creating some single-qubit base operators.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Create a basis for single-qubit states
+bs = [BaseQuditState(f&quot;{i}&quot;) for i in range(2)]
+
+bp0 = BaseOperator(bs[0], bs[0])
+print(bp0)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Op[|0&gt;&lt;0|]
+</pre></div></div>
+</div>
+<p>We can from a <code class="docutils literal notranslate"><span class="pre">BaseOperator</span></code> create an <code class="docutils literal notranslate"><span class="pre">Operator</span></code> as:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>p0 = bp0.to_operator()
+print(p0)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1*Op[|0&gt;&lt;0|]
+</pre></div></div>
+</div>
+<p>Lets say we want to create the Hadamard operation, we can then make use of the <code class="docutils literal notranslate"><span class="pre">outer_product</span></code> function:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Create standard and Hadamard basis states
+s0 = bs[0].to_state()
+s1 = bs[1].to_state()
+h0 = (s0 + s1) * (1 / np.sqrt(2))
+h1 = (s0 - s1) * (1 / np.sqrt(2))
+
+# Create Hadamard gate
+h = outer_product(h0, s0) + outer_product(h1, s1)
+print(h)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.7071067811865475*Op[|0&gt;&lt;0|] + 0.7071067811865475*Op[|1&gt;&lt;0|] + 0.7071067811865475*Op[|0&gt;&lt;1|] + -0.7071067811865475*Op[|1&gt;&lt;1|]
+</pre></div></div>
+</div>
+<p>We can now let this operator act on a state:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>print(h * s0)
+print(h * h0)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.7071067811865475*|0&gt; + 0.7071067811865475*|1&gt;
+0.9999999999999998*|0&gt;
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="General-operators">
+<h3>General operators<a class="headerlink" href="#General-operators" title="Permalink to this headline">¶</a></h3>
+<p>We can also create operators acting on non-qubit states but also operators taking a state in some Hilbert-space to another.</p>
+<p>For example let’s define an operator from a qubit to a fock state:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Create standard basis states
+bs = [BaseQuditState(f&quot;{i}&quot;) for i in range(2)]
+s0 = bs[0].to_state()
+s1 = bs[1].to_state()
+
+# Create two fock states in different modes
+a = FockOp(&#39;a&#39;, &#39;w&#39;)
+b = FockOp(&#39;b&#39;, &#39;w&#39;)
+fs0 = BaseFockState([a]).to_state()
+fs1 = BaseFockState([b]).to_state()
+
+# Create an operator from a qubit state to a fock state
+op = outer_product(fs0, s0) + outer_product(fs1, s1)
+print(op)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1*Op[a+(w)^1|0&gt;&lt;0|] + 1*Op[b+(w)^1|0&gt;&lt;1|]
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Measuring">
+<h2>Measuring<a class="headerlink" href="#Measuring" title="Permalink to this headline">¶</a></h2>
+<p>We can use what we have learned about states and operators to now also measure states given a set of measurement operators. We can create general POVM measurement but we will here for simplicity only perform a measurement in the standard single-qubit basis. However general POVMs work in the same way.</p>
+<p>To perform a measuremnt we first need to define the Kraus operators that define the measuremnent:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from qualg.measure import measure
+</pre></div>
+</div>
+</div>
+<p>To perform a measurement we first need to define the Kraus operators that define the measurement:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Create single-qubit states
+s0 = BaseQubitState(&quot;0&quot;).to_state()
+s1 = BaseQubitState(&quot;1&quot;).to_state()
+# Create Hadamard basis state
+h0 = (s0 + s1) * (1 / np.sqrt(2))
+
+# Create a projective measurement
+P0 = outer_product(s0, s0)
+P1 = outer_product(s1, s1)
+kraus_ops = {0: P0, 1: P1}
+</pre></div>
+</div>
+</div>
+<p>What we pass into the measure-function is a dictionary where the keys are the measurement outcomes and the values the Kraus operators. Note that there is not check that the operators actually form a valid POVM.</p>
+<p>Lets now measure some states and see that we get (run the below examples multiple times to see that happens):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Measure |0&gt;
+meas_res = measure(s0, kraus_ops)
+print(meas_res)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MeasurementResult(outcome=0, probability=1, post_meas_state=State([(BaseQubitState(&#39;0&#39;), 1.0)]))
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Measure |1&gt;
+meas_res = measure(s1, kraus_ops)
+print(meas_res)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MeasurementResult(outcome=1, probability=1, post_meas_state=State([(BaseQubitState(&#39;1&#39;), 1.0)]))
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Measure |+&gt;
+meas_res = measure(h0, kraus_ops)
+print(meas_res)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+MeasurementResult(outcome=1, probability=0.4999999999999999, post_meas_state=State([(BaseQubitState(&#39;1&#39;), 1.0)]))
+</pre></div></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">QuAlg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#States">States</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Operators">Operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Measuring">Measuring</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axel Dahlberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/quickstart.ipynb.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

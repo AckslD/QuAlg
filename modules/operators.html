@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>operators &#8212; QuAlg 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="q_state" href="q_state.html" />
+    <link rel="prev" title="integrate" href="integrate.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-qualg.operators">
+<span id="operators"></span><h1>operators<a class="headerlink" href="#module-qualg.operators" title="Permalink to this headline">¶</a></h1>
+<p>Module for representing operators of quantum states.</p>
+<p>An <a class="reference internal" href="#qualg.operators.Operator" title="qualg.operators.Operator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operator</span></code></a> is constructed as a sum of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code> and in turn <a class="reference internal" href="states.html#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a></p>
+<p>The <a class="reference internal" href="#qualg.operators.BaseOperator" title="qualg.operators.BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a>-class represents a single term of the form |left&gt;&lt;right|,
+where left and right are <a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>’s. The <a class="reference internal" href="#qualg.operators.BaseOperator" title="qualg.operators.BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> is
+agnostic to which subclass of <a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a> is used.</p>
+<p>The <a class="reference internal" href="#qualg.operators.Operator" title="qualg.operators.Operator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operator</span></code></a>-class is then a sum of <a class="reference internal" href="#qualg.operators.BaseOperator" title="qualg.operators.BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a>.</p>
+<dl class="class">
+<dt id="qualg.operators.BaseOperator">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.operators.</code><code class="sig-name descname">BaseOperator</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.BaseOperator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.operators.BaseOperator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.BaseOperator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a single term of an operator, i.e. |left&gt;&lt;right|,
+where left and right are <a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>’s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – Left side of operator.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – Right side of operator.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.BaseOperator.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#qualg.operators.BaseOperator.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the shape of the operator, e.q. (2, 2) for a single-qubit operator.</p>
+<p><cite>None</cite> means that the shape is undefined, e.g. if the state is infinite-dimensional.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.BaseOperator.to_operator">
+<code class="sig-name descname">to_operator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.BaseOperator.to_operator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the base operator to an <a class="reference internal" href="#qualg.operators.Operator" title="qualg.operators.Operator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operator</span></code></a> with a single term.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.BaseOperator.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.BaseOperator.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces a variable with another.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.BaseOperator.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.BaseOperator.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.operators.Operator">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.operators.</code><code class="sig-name descname">Operator</code><span class="sig-paren">(</span><em class="sig-param">base_ops=None</em>, <em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.operators.Operator.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">base_ops=None</em>, <em class="sig-param">scalars=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>An operator represented as a sum of <a class="reference internal" href="#qualg.operators.BaseOperator" title="qualg.operators.BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a> of a subclass thereof.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_ops</strong> (None or list of <a class="reference internal" href="#qualg.operators.BaseOperator" title="qualg.operators.BaseOperator"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOperator</span></code></a>) – The base operators that sums up to this operator.
+If <cite>None</cite>, then the operator is “zero”, i.e. no terms.</p></li>
+<li><p><strong>scalar</strong> (None or list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Scalar</span></code>) – The amplitudes used when taking the sum of base operators.
+If <cite>None</cite>, then all operators have amplitude 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.Operator.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#qualg.operators.Operator.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the shape of the operator, e.q. (2, 2) for a single-qubit operator.</p>
+<p><cite>None</cite> means that the shape is undefined, e.g. if the state is infinite-dimensional.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.Operator.get_scalar">
+<code class="sig-name descname">get_scalar</code><span class="sig-paren">(</span><em class="sig-param">base_op</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator.get_scalar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the scalar of the given base_op</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.Operator.dagger">
+<code class="sig-name descname">dagger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator.dagger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate of the operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.Operator.simplify">
+<code class="sig-name descname">simplify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator.simplify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to simplify the operator, returning a new one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.Operator.replace_var">
+<code class="sig-name descname">replace_var</code><span class="sig-paren">(</span><em class="sig-param">old_variable</em>, <em class="sig-param">new_variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator.replace_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces a variable with another.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.Operator.get_variables">
+<code class="sig-name descname">get_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator.get_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variable of this operator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.operators.Operator.to_numpy_matrix">
+<code class="sig-name descname">to_numpy_matrix</code><span class="sig-paren">(</span><em class="sig-param">convert_scalars=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.Operator.to_numpy_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the operator to a numpy matrix.</p>
+<p>If there are non-number scalars then the provided function <cite>convert_scalars</cite>
+is used to convert a non-number scalar to a number.
+This function should then take a scalar (plus optional keyword arguments) and return a number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>convert_scalars</strong> (<em>function</em>) – Function to convert a non-number scalar to a number.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword-arguments to be passed to <cite>convert_scalars</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The operator in numerical matrix form.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="qualg.operators.outer_product">
+<code class="sig-prename descclassname">qualg.operators.</code><code class="sig-name descname">outer_product</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">right</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.operators.outer_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an opertor based on the outer product of left and right, i.e. |left&gt;&lt;right|.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – Left side of operator.</p></li>
+<li><p><strong>right</strong> (<a class="reference internal" href="states.html#qualg.states.BaseState" title="qualg.states.BaseState"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseState</span></code></a>) – Right side of operator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The new operator.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#qualg.operators.Operator" title="qualg.operators.Operator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operator</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">QuAlg</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fock_state.html">fock_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measure.html">measure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="integrate.html">integrate</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="q_state.html">q_state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scalars.html">scalars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="states.html">states</a></li>
+<li class="toctree-l2"><a class="reference internal" href="toolbox.html">toolbox</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../api.html">API</a><ul>
+      <li>Previous: <a href="integrate.html" title="previous chapter">integrate</a></li>
+      <li>Next: <a href="q_state.html" title="next chapter">q_state</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axel Dahlberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/modules/operators.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
