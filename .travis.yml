@@ -13,6 +13,7 @@ before_install:
 - make build
 install:
 - pip3 install dist/*.whl $PIPFLAG
+- make test-deps
 script:
 - make lint
 - make tests
