@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/AckslD/QuAlg.svg?branch=master)](https://travis-ci.org/AckslD/QuAlg)
+
 QuAlg (0.0.1)
 =====================================================
 
