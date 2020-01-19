@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/AckslD/QuAlg.svg?branch=master)](https://travis-ci.org/AckslD/QuAlg)
 
-QuAlg (0.0.1)
+QuAlg (0.0.2)
 =====================================================
 
 Welcome to QuAlg's README.
