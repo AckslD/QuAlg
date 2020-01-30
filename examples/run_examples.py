@@ -15,7 +15,8 @@ def main():
     for root, folders, files in os.walk(path_to_here):
         for filename in files:
             if filename.startswith("example_") and filename.endswith(".py"):
-                members = runpy.run_path(filename)
+                filepath = os.path.join(root, filename)
+                members = runpy.run_path(filepath)
                 if "main" in members:
                     main = members["main"]
                     if _has_first_argument(main, "no_output"):
