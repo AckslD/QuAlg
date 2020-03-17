@@ -141,8 +141,15 @@ class State:
                 if not bs1._compatible(bs2):
                     raise ValueError(f"States {bs1} and {bs2} are not compatible terms")
 
+    def _key(self):
+        return set((base_state, scalar) for base_state, scalar in self._terms.items())
+
     def __eq__(self, other):
-        raise NotImplementedError()
+        self._assert_class(other)
+        return self._key() == other._key()
+
+    def __hash__(self):
+        return hash(self._key())
 
     def __add__(self, other):
         if not isinstance(other, self.__class__):
@@ -329,3 +336,7 @@ class State:
         for base_state, scalar in self._terms.items():
             to_return += f"{scalar.conjugate()}*{base_state._bra_str()} + "
         return to_return[:-3]
+
+    def _assert_class(self, other):
+        if not isinstance(other, self.__class__):
+            raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")
