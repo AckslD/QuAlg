@@ -48,6 +48,7 @@ def measure(state, kraus_ops):
         if not is_number(p):
             raise NotImplementedError("Cannot perform measurement when inner product are not numbers")
         if p < 0:
+            # NOTE: should not happen
             raise ValueError("Seems the Kraus operators does not form positive operators")
         if offset <= r <= offset + p:
             post_state = post_state * (1 / np.sqrt(p))

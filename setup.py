@@ -8,7 +8,7 @@ with open("requirements.txt", 'r') as f:
 
 setuptools.setup(
     name="qualg",
-    version="0.0.2",
+    version="0.0.3",
     author="Axel Dahlberg",
     author_email="axel.dahlberg12@gmail.com",
     description="Symbolic linear algrebra for quantum mechanics",
@@ -16,7 +16,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/AckslD/QuAlg",
     include_package_data=True,
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=('tests', 'docs', 'examples')),
     install_requires=install_requires,
     python_requires='>=3.6',
 )

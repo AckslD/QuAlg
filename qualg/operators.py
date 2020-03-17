@@ -14,7 +14,7 @@ The :class:`~.Operator`-class is then a sum of :class:`~.BaseOperator`.
 import numpy as np
 from collections import defaultdict
 
-from qualg.scalars import Scalar, is_scalar, is_number
+from qualg.scalars import is_scalar, is_number
 from qualg.states import BaseState, State
 from qualg.toolbox import assert_list_or_tuple, simplify, replace_var, get_variables, is_zero
 from qualg.integrate import integrate
@@ -37,18 +37,21 @@ class BaseOperator:
         self._left = left
         self._right = right
 
+    def _key(self):
+        return (self._left, self._right)
+
     def __eq__(self, other):
         self._assert_class(other)
-        return (self._left == other._left) and (self._right == other._right)
+        return self._key() == other._key()
 
     def __hash__(self):
-        return hash((hash(self._left), hash(self._right)))
+        return hash(self._key())
 
     def __mul__(self, other):
-        if not self._mul_compatible(other):
-            raise TypeError(f"other ({other}) is not multiplication compatible with self ({self})")
         if not isinstance(other, State):
             return NotImplemented
+        if not self._mul_compatible(other):
+            raise TypeError(f"other ({other}) is not multiplication compatible with self ({self})")
         new_state = State([])
         for base_state, scalar in other._terms.items():
             new_state._terms[self._left] += self._right.inner_product(base_state) * scalar
@@ -162,10 +165,20 @@ class Operator:
                 if not bo1._add_compatible(bo2):
                     raise ValueError(f"Base operators {bo1} and {bo2} are not compatible terms")
 
+    def _key(self):
+        return set((base_op, scalar) for base_op, scalar in self._terms.items())
+
+    def __eq__(self, other):
+        self._assert_class(other)
+        return self._key() == other._key()
+
+    def __hash__(self):
+        return hash(self._key())
+
     def __mul__(self, other):
         if not self._mul_compatible(other):
             raise ValueError(f"operator not multiplication compatible with {other}")
-        if isinstance(other, Scalar):
+        if is_scalar(other):
             return self._mul_scalar(other)
         elif isinstance(other, State):
             return self._mul_state(other)
@@ -356,6 +369,8 @@ class Operator:
             self_term = next(iter(self._terms.keys()))
             other_term = next(iter(other._terms.keys()))
             return self_term._mul_compatible(other_term)
+        elif is_scalar(other):
+            return True
         return False
 
     def _add_compatible(self, other):
@@ -372,6 +387,10 @@ class Operator:
         self_term = next(iter(self._terms.keys()))
         other_term = next(iter(other._terms.keys()))
         return self_term._add_compatible(other_term)
+
+    def _assert_class(self, other):
+        if not isinstance(other, self.__class__):
+            raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")
 
 
 def outer_product(left, right):

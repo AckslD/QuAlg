@@ -21,7 +21,7 @@ help:
 test-deps:
 	@$(PYTHON3) -m pip install -r test_requirements.txt
 
-requirements python-deps: _check_variables
+requirements python-deps:
 	@$(PYTHON3) -m pip install -r requirements.txt ${PIP_FLAGS}
 
 clean:
