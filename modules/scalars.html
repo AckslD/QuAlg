@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>scalars &#8212; QuAlg 0.0.3 documentation</title>
+    <title>scalars &#8212; QuAlg 0.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -74,6 +74,73 @@ In particular when the output is not a number but a symbolic variable of functio
 <em class="property">abstract </em><code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Scalar.conjugate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complex conjugate</p>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.Variable">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">Variable</code><span class="sig-paren">(</span><em class="sig-param">variable</em>, <em class="sig-param">conjugate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Variable" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.scalars.Variable.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">variable</em>, <em class="sig-param">conjugate=False</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Variable.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a number as a variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>variable</strong> (<em>str</em>) – Name of variable.</p></li>
+<li><p><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>conjugate</em>) – If the variable is conjugated (default: <cite>False</cite>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.Variable.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Variable.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.Variable.is_zero">
+<code class="sig-name descname">is_zero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Variable.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.Variable.is_one">
+<code class="sig-name descname">is_one</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.Variable.is_one" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="qualg.scalars.AbsoluteVariable">
+<em class="property">class </em><code class="sig-prename descclassname">qualg.scalars.</code><code class="sig-name descname">AbsoluteVariable</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.AbsoluteVariable" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="qualg.scalars.AbsoluteVariable.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">variable</em><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.AbsoluteVariable.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents the absolute value squared of a variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>variable</strong> (<em>str</em>) – Name of variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.AbsoluteVariable.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.AbsoluteVariable.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex conjugate</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.AbsoluteVariable.is_zero">
+<code class="sig-name descname">is_zero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.AbsoluteVariable.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="qualg.scalars.AbsoluteVariable.is_one">
+<code class="sig-name descname">is_one</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qualg.scalars.AbsoluteVariable.is_one" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -369,6 +436,7 @@ In particular when the output is not a number but a symbolic variable of functio
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html#Variables">Variables</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="fock_state.html">fock_state</a></li>
 <li class="toctree-l2"><a class="reference internal" href="measure.html">measure</a></li>

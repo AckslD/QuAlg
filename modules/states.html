@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>states &#8212; QuAlg 0.0.3 documentation</title>
+    <title>states &#8212; QuAlg 0.1.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -132,7 +132,8 @@ If <cite>None</cite>, then all operators have amplitude 1.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>other</strong> (<a class="reference internal" href="#qualg.states.State" title="qualg.states.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>) – The right hand side of the inner product.</p></li>
 <li><p><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>first_replace_var</em>) – Whether to replace all varibles of the right hand side with
-new ones. This can be useful when the two states are actually integrals
+new ones (only done for <cite>SingleVarFunctionScalar</cite>).
+This can be useful when the two states are actually integrals
 over the variables and should therefore be different.</p></li>
 </ul>
 </dd>
@@ -205,6 +206,7 @@ over the variables and should therefore be different.</p></li>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html#Variables">Variables</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="fock_state.html">fock_state</a></li>
 <li class="toctree-l2"><a class="reference internal" href="measure.html">measure</a></li>

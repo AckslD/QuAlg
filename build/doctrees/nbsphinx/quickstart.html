@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Quickstart &#8212; QuAlg 0.0.3 documentation</title>
+    <title>Quickstart &#8212; QuAlg 0.1.0 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -265,13 +265,125 @@ div.rendered_html tbody tr:hover {
 <li><p>…</p></li>
 </ul>
 <p>For a more elaborate and realistic usecase for <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code>, see the example <a class="reference external" href="https://github.com/AckslD/QuAlg/blob/master/examples/example_ll_povm.py">https://github.com/AckslD/QuAlg/blob/master/examples/example_ll_povm.py</a> which computes the POVMs used in the simulations of the paper <a class="reference external" href="https://arxiv.org/abs/1903.09778">https://arxiv.org/abs/1903.09778</a> which was preciously computed by hand.</p>
+</div>
+<div class="section" id="Variables">
+<h1>Variables<a class="headerlink" href="#Variables" title="Permalink to this headline">¶</a></h1>
+<p>The power of QuAlg is that one can use variables instead of numbers to represent quantum states, operators etc. Lets first look at how one can work with variables in QuAlg.</p>
+<p>A variable can be created as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from qualg.scalars import Variable
+
+# A variable &#39;a&#39;
+a = Variable(&#39;a&#39;)
+print(a)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+a
+</pre></div></div>
+</div>
+<p>A variable is assumed to be a complex number so we can conjugate it as follows</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>print(a.conjugate())
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(a*)
+</pre></div></div>
+</div>
+<p>QuAlg will also recognise certain expression, such as when taking the product of something conjugate:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>expr = a * a.conjugate()
+print(expr)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+|a|^2
+</pre></div></div>
+</div>
+<p>One can easily create aritmetic expression using the standard addition and multiplication operators:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span># Create four variables
+a, b, c, d = (Variable(name) for name in [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;])
+expr = (a + b) * (c + d)
+print(expr)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(a + b)*(c + d)
+</pre></div></div>
+</div>
+<p>Expressions can be simplified using <code class="docutils literal notranslate"><span class="pre">simplify</span></code> or in <code class="docutils literal notranslate"><span class="pre">expanded</span></code> to only have sums of product:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from qualg.toolbox import simplify, expand
+expr = expand(expr)
+print(&quot;Expanded expression:&quot;)
+print(expr)
+
+expr = simplify(expr)
+print(&quot;Simplified expression:&quot;)
+print(expr)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Expanded expression:
+(0 + 0*c + 0*d + 0*a + a*c + a*d + 0*b + b*c + b*d)
+Simplified expression:
+(a*c + a*d + b*c + b*d)
+</pre></div></div>
+</div>
 <div class="section" id="States">
 <h2>States<a class="headerlink" href="#States" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="Single-qubit-state">
 <h3>Single-qubit state<a class="headerlink" href="#Single-qubit-state" title="Permalink to this headline">¶</a></h3>
 <p>We first look at how one can create qubit states:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -282,7 +394,7 @@ from qualg.q_state import BaseQubitState
 </div>
 <p>A <code class="docutils literal notranslate"><span class="pre">BaseQuditState</span></code> (subclass of <code class="docutils literal notranslate"><span class="pre">BaseState</span></code>) represents a single term in a quantum state and can be used to build a basis for such.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -304,7 +416,7 @@ print(bs[1])
 </div>
 <p>Using these base states we can construct arbitary states. To do so we first need to make these base states actual states, which we can then add together to construct superpositions of such.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -315,7 +427,7 @@ s1 = bs[1].to_state()
 </div>
 <p>Lets now for example construct the state <span class="math notranslate nohighlight">\(|+\rangle=\frac{1}{2}(|0\rangle+|1\rangle)\)</span>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -333,12 +445,52 @@ print(h0)
 </pre></div></div>
 </div>
 <p>As you will see when working with <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code> is that all objects have a nice string-representation and can be printed. This is one of the aims of <code class="docutils literal notranslate"><span class="pre">QuAlg</span></code>.</p>
+<p>We can also make use of variables as we have seen above to represent states symbolically:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>a = Variable(&#39;a&#39;)
+b = Variable(&#39;b&#39;)
+s_psi = (a * s0 + b * s1)
+print(s_psi)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+a*|0&gt; + b*|1&gt;
+</pre></div></div>
+</div>
+<p>We can then compute the inner norm of this state, that is the inner-product with itself:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>inner = s_psi.inner_product(s_psi)
+print(inner)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(|a|^2 + |b|^2)
+</pre></div></div>
+</div>
 </div>
 <div class="section" id="Multi-qudit-states">
 <h3>Multi-qudit states<a class="headerlink" href="#Multi-qudit-states" title="Permalink to this headline">¶</a></h3>
 <p>Lets say that we instead would like to work with states on two qutrits. We can easily do this as follows:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -349,7 +501,7 @@ from qualg.q_state import BaseQuditState
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -371,7 +523,7 @@ print(bs[-1])
 </div>
 <p>Feel free to change the number of levels above. Similarly to before we can now construct superpositions of these base states:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -393,7 +545,7 @@ print(superpos)
 <h3>Fock states<a class="headerlink" href="#Fock-states" title="Permalink to this headline">¶</a></h3>
 <p>We can also work with states in second quantization, where these are represented as excitations of some given mode. To do this we first need to define our creation operators:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -402,7 +554,7 @@ print(superpos)
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -421,7 +573,7 @@ a+(w)
 </div>
 <p>We have define a creation operator of in mode <code class="docutils literal notranslate"><span class="pre">a</span></code> and with variable <code class="docutils literal notranslate"><span class="pre">w</span></code> (e.g. frequency). We can then use this to define the state where this operator acts on the vacuum:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -440,7 +592,7 @@ a+(w)^1|0&gt;
 </div>
 <p>Lets see what happens when we take inner products of these fock states.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -463,7 +615,7 @@ D[w-v]
 <p>Hey! That’s pretty cool, we got a delta function with the variables <code class="docutils literal notranslate"><span class="pre">w</span></code> and <code class="docutils literal notranslate"><span class="pre">v</span></code>.</p>
 <p>Lets look at a more complicated example where we have states which are superpositions over modes defined by a wavepacket. For example let’s say we have one state with the wave-packet <code class="docutils literal notranslate"><span class="pre">phi</span></code> and the other with <code class="docutils literal notranslate"><span class="pre">psi</span></code> as follows:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -472,7 +624,7 @@ D[w-v]
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -502,7 +654,7 @@ psi(w)*a+(w)^1|0&gt;
 <p>.</p>
 <p>We can now take the inner product of these two states:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -521,7 +673,7 @@ phi*(w)*psi(w&#39;)*D[w-w&#39;]
 </div>
 <p>What is then left to do is to integrate out this expression since there are integrals from the states which we left out until now. By default, the <code class="docutils literal notranslate"><span class="pre">integrate</span></code> function will integrate out all varibles in the expression if not otherwise specified.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -530,7 +682,7 @@ phi*(w)*psi(w&#39;)*D[w-w&#39;]
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -549,7 +701,7 @@ print(integrated_inp)
 </div>
 <p>What’s this? Looks like an inner-product between functions. That’s exactly what it is. We can see this more clearly by writing out the representation of the state:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -572,7 +724,7 @@ InnerProductFunction(&#39;phi&#39;, &#39;psi&#39;)
 <h2>Operators<a class="headerlink" href="#Operators" title="Permalink to this headline">¶</a></h2>
 <p>Operators work very much like states in that there is a <code class="docutils literal notranslate"><span class="pre">BaseOperator</span></code>-class which represents the terms of an <code class="docutils literal notranslate"><span class="pre">Operator</span></code>. A <code class="docutils literal notranslate"><span class="pre">BaseOperator</span></code> is described by a left and right <code class="docutils literal notranslate"><span class="pre">BaseState</span></code>, i.e. <span class="math notranslate nohighlight">\(|\textrm{left}\rangle\langle\textrm{right}|\)</span>.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -584,7 +736,7 @@ InnerProductFunction(&#39;phi&#39;, &#39;psi&#39;)
 <h3>Single-qubit operators<a class="headerlink" href="#Single-qubit-operators" title="Permalink to this headline">¶</a></h3>
 <p>Let’s start with creating some single-qubit base operators.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -606,7 +758,7 @@ Op[|0&gt;&lt;0|]
 </div>
 <p>We can from a <code class="docutils literal notranslate"><span class="pre">BaseOperator</span></code> create an <code class="docutils literal notranslate"><span class="pre">Operator</span></code> as:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -625,7 +777,7 @@ print(p0)
 </div>
 <p>Lets say we want to create the Hadamard operation, we can then make use of the <code class="docutils literal notranslate"><span class="pre">outer_product</span></code> function:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -651,7 +803,7 @@ print(h)
 </div>
 <p>We can now let this operator act on a state:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -675,7 +827,7 @@ print(h * h0)
 <p>We can also create operators acting on non-qubit states but also operators taking a state in some Hilbert-space to another.</p>
 <p>For example let’s define an operator from a qubit to a fock state:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[29]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -711,7 +863,7 @@ print(op)
 <p>We can use what we have learned about states and operators to now also measure states given a set of measurement operators. We can create general POVM measurement but we will here for simplicity only perform a measurement in the standard single-qubit basis. However general POVMs work in the same way.</p>
 <p>To perform a measuremnt we first need to define the Kraus operators that define the measuremnent:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -721,7 +873,7 @@ print(op)
 </div>
 <p>To perform a measurement we first need to define the Kraus operators that define the measurement:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[31]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -741,7 +893,7 @@ kraus_ops = {0: P0, 1: P1}
 <p>What we pass into the measure-function is a dictionary where the keys are the measurement outcomes/labels and the values the Kraus operators. Note that there is not check that the operators actually form a valid POVM.</p>
 <p>Lets now measure some states and see that we get (run the below examples multiple times to see that happens):</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -760,7 +912,7 @@ MeasurementResult(outcome=0, probability=1, post_meas_state=State([(BaseQubitSta
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -779,7 +931,7 @@ MeasurementResult(outcome=1, probability=1, post_meas_state=State([(BaseQubitSta
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -794,7 +946,7 @@ print(meas_res)
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-MeasurementResult(outcome=1, probability=0.4999999999999999, post_meas_state=State([(BaseQubitState(&#39;1&#39;), 1.0)]))
+MeasurementResult(outcome=0, probability=0.4999999999999999, post_meas_state=State([(BaseQubitState(&#39;0&#39;), 1.0)]))
 </pre></div></div>
 </div>
 </div>
@@ -821,6 +973,7 @@ MeasurementResult(outcome=1, probability=0.4999999999999999, post_meas_state=Sta
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#Variables">Variables</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
 </ul>
 
