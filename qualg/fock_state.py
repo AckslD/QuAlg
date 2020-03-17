@@ -95,18 +95,19 @@ class FockOpProduct:
             self._fock_ops[fock_op] += 1
 
     def __mul__(self, other):
+        new_op = FockOpProduct()
         if isinstance(other, FockOp):
-            new_op = FockOpProduct()
             for fock_op, count in self._fock_ops.items():
                 new_op._fock_ops[fock_op] += count
             new_op._fock_ops[other] += 1
+            return new_op
         elif isinstance(other, FockOpProduct):
-            new_op = FockOpProduct()
             for fock_op, count in self._fock_ops.items():
                 new_op._fock_ops[fock_op] += count
             for fock_op, count in other._fock_ops.items():
                 new_op._fock_ops[fock_op] += count
-            return new_op
+
+        return new_op
 
     def __str__(self):
         to_print = ""
@@ -122,7 +123,7 @@ class FockOpProduct:
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
-            return False
+            return NotImplemented
         return self._key() == other._key()
 
     def dagger(self):
@@ -131,7 +132,7 @@ class FockOpProduct:
         """
         new_op = FockOpProduct()
         for fock_op, count in self._fock_ops.items():
-            new_op[fock_op.dagger()] = count
+            new_op._fock_ops[fock_op.dagger()] = count
 
         return new_op
 
@@ -199,7 +200,7 @@ class BaseFockState(BaseState):
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
-            return False
+            return NotImplemented
         return self._key() == other._key()
 
     def __hash__(self):

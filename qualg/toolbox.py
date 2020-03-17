@@ -1,5 +1,6 @@
 """Various useful functions used throughout the package"""
 
+import math
 from copy import copy
 
 
@@ -36,6 +37,8 @@ def expand(obj):
 
 def is_zero(obj):
     """Tries to check if an object is considered zero"""
+    if isinstance(obj, int) or isinstance(obj, float):
+        return math.isclose(obj, 0, abs_tol=1e-16)
     if hasattr(obj, "is_zero"):
         return obj.is_zero()
     return obj == 0
@@ -43,6 +46,8 @@ def is_zero(obj):
 
 def is_one(obj):
     """Tries to check if an object is considered one"""
+    if isinstance(obj, int) or isinstance(obj, float):
+        return math.isclose(obj, 1, abs_tol=1e-16)
     if hasattr(obj, "is_one"):
         return obj.is_one()
     return obj == 1

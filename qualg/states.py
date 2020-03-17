@@ -141,8 +141,16 @@ class State:
                 if not bs1._compatible(bs2):
                     raise ValueError(f"States {bs1} and {bs2} are not compatible terms")
 
+    def _key(self):
+        return set((base_state, scalar) for base_state, scalar in self._terms.items())
+
     def __eq__(self, other):
-        raise NotImplementedError()
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self._key() == other._key()
+
+    def __hash__(self):
+        return hash(self._key())
 
     def __add__(self, other):
         if not isinstance(other, self.__class__):
@@ -217,7 +225,8 @@ class State:
             The right hand side of the inner product.
         first_replace_var (optional) : bool
             Whether to replace all varibles of the right hand side with
-            new ones. This can be useful when the two states are actually integrals
+            new ones (only done for `SingleVarFunctionScalar`).
+            This can be useful when the two states are actually integrals
             over the variables and should therefore be different.
 
         Returns
