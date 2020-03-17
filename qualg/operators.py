@@ -41,7 +41,8 @@ class BaseOperator:
         return (self._left, self._right)
 
     def __eq__(self, other):
-        self._assert_class(other)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
         return self._key() == other._key()
 
     def __hash__(self):
@@ -97,10 +98,6 @@ class BaseOperator:
     def to_operator(self):
         """Converts the base operator to an :class:`~.Operator` with a single term."""
         return Operator([self])
-
-    def _assert_class(self, other):
-        if not isinstance(other, self.__class__):
-            raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")
 
     def replace_var(self, old_variable, new_variable):
         """
@@ -169,7 +166,8 @@ class Operator:
         return set((base_op, scalar) for base_op, scalar in self._terms.items())
 
     def __eq__(self, other):
-        self._assert_class(other)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
         return self._key() == other._key()
 
     def __hash__(self):
@@ -387,10 +385,6 @@ class Operator:
         self_term = next(iter(self._terms.keys()))
         other_term = next(iter(other._terms.keys()))
         return self_term._add_compatible(other_term)
-
-    def _assert_class(self, other):
-        if not isinstance(other, self.__class__):
-            raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")
 
 
 def outer_product(left, right):

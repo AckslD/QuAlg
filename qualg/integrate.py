@@ -24,7 +24,7 @@ class _Integration(Scalar):
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
-            return False
+            return NotImplemented
         # TODO check with swapping the integration variable since this shouldn't matter
         return self._scalar == other._scalar and self._variable == other._variable
 

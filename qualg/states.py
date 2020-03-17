@@ -145,7 +145,8 @@ class State:
         return set((base_state, scalar) for base_state, scalar in self._terms.items())
 
     def __eq__(self, other):
-        self._assert_class(other)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
         return self._key() == other._key()
 
     def __hash__(self):
@@ -224,7 +225,8 @@ class State:
             The right hand side of the inner product.
         first_replace_var (optional) : bool
             Whether to replace all varibles of the right hand side with
-            new ones. This can be useful when the two states are actually integrals
+            new ones (only done for `SingleVarFunctionScalar`).
+            This can be useful when the two states are actually integrals
             over the variables and should therefore be different.
 
         Returns
@@ -336,7 +338,3 @@ class State:
         for base_state, scalar in self._terms.items():
             to_return += f"{scalar.conjugate()}*{base_state._bra_str()} + "
         return to_return[:-3]
-
-    def _assert_class(self, other):
-        if not isinstance(other, self.__class__):
-            raise NotImplementedError(f"other is not of type {self.__class__}, but {type(other)}")

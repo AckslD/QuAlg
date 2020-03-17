@@ -123,7 +123,7 @@ class FockOpProduct:
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
-            return False
+            return NotImplemented
         return self._key() == other._key()
 
     def dagger(self):
@@ -200,7 +200,7 @@ class BaseFockState(BaseState):
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
-            return False
+            return NotImplemented
         return self._key() == other._key()
 
     def __hash__(self):

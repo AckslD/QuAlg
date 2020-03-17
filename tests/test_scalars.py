@@ -1,7 +1,7 @@
 import pytest
 
-from qualg.toolbox import simplify, replace_var, get_variables, has_variable, is_zero
-from qualg.scalars import SingleVarFunctionScalar, DeltaFunction, SumOfScalars
+from qualg.toolbox import simplify, replace_var, get_variables, has_variable, is_zero, expand
+from qualg.scalars import SingleVarFunctionScalar, DeltaFunction, SumOfScalars, Variable
 
 
 def test_product_of_scalars():
@@ -167,3 +167,29 @@ def test_sum_commutative():
     sm2 = d * c + b * a
 
     assert sm1 == sm2
+
+
+def test_variable():
+    a = Variable('a')
+    b = Variable('b')
+
+    expr = a * b + b * a
+    print(expr)
+
+    expr = simplify(expr)
+
+    assert expr == 2 * a * b
+
+
+def test_expand_variable():
+    a = Variable('a')
+    b = Variable('b')
+    c = Variable('c')
+    d = Variable('d')
+
+    expr = (a + b) * (c + d)
+    expr = expand(expr)
+    assert len(expr) == 9
+    expr = simplify(expr)
+    assert len(expr) == 4
+    assert isinstance(expr, SumOfScalars)

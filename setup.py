@@ -8,7 +8,7 @@ with open("requirements.txt", 'r') as f:
 
 setuptools.setup(
     name="qualg",
-    version="0.0.3",
+    version="0.1.0",
     author="Axel Dahlberg",
     author_email="axel.dahlberg12@gmail.com",
     description="Symbolic linear algrebra for quantum mechanics",
