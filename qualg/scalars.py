@@ -58,6 +58,10 @@ class Scalar(abc.ABC):
         return SumOfScalars([self, other])
 
     def __mul__(self, other):
+        if is_zero(other):
+            return 0
+        if is_one(other):
+            return copy(self)
         if not is_scalar(other):
             return NotImplemented
         if isinstance(other, ProductOfScalars):
@@ -69,6 +73,10 @@ class Scalar(abc.ABC):
 
     def __radd__(self, other):
         return self + other
+
+    def __copy__(self):
+        return eval(repr(self))
+        pass
 
     def has_variable(self, variable):
         """Checks if scalar depends on a given variable."""
@@ -88,6 +96,80 @@ class Scalar(abc.ABC):
     @abc.abstractmethod
     def _key(self):
         pass
+
+
+class Variable(Scalar):
+    def __init__(self, variable, conjugate=False):
+        """Represents a number as a variable
+
+        Parameters
+        ----------
+        variable : str
+            Name of variable.
+        conjugate (optional) : bool
+            If the variable is conjugated (default: `False`)
+        """
+        assert_str(variable)
+        self._variable = variable
+        self._conjugate = conjugate
+
+    def __str__(self):
+        if self._conjugate:
+            return f"({self._variable}*)"
+        else:
+            return self._variable
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({repr(self._variable)}, {self._conjugate})"
+
+    def __mul__(self, other):
+        if isinstance(other, Variable):
+            if self == other.conjugate():
+                return AbsoluteVariable(self._variable)
+        return super().__mul__(other)
+
+    def conjugate(self):
+        return Variable(self._variable, not self._conjugate)
+
+    def is_zero(self):
+        return False
+
+    def is_one(self):
+        return False
+
+    def _key(self):
+        return (self._variable, self._conjugate)
+
+
+class AbsoluteVariable(Scalar):
+    def __init__(self, variable):
+        """Represents the absolute value squared of a variable
+
+        Parameters
+        ----------
+        variable : str
+            Name of variable.
+        """
+        assert_str(variable)
+        self._variable = variable
+
+    def __str__(self):
+        return f"|{self._variable}|^2"
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({repr(self._variable)})"
+
+    def conjugate(self):
+        return AbsoluteVariable(self._variable)
+
+    def is_zero(self):
+        return False
+
+    def is_one(self):
+        return False
+
+    def _key(self):
+        return self._variable
 
 
 class SingleVarFunctionScalar(Scalar):
@@ -200,7 +282,7 @@ class DeltaFunction(Scalar):
 
     def __repr__(self):
         v1, v2 = self._vars
-        return f"{self.__class__.__name__}({v1}, {v2})"
+        return f"{self.__class__.__name__}({repr(v1)}, {repr(v2)})"
 
     def replace_var(self, old_variable, new_variable):
         new_vars = list(self._vars)
