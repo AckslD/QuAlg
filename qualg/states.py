@@ -30,6 +30,10 @@ class BaseState(abc.ABC):
     def __hash__(self):
         pass
 
+    @abc.abstractmethod
+    def __str__(self, other):
+        pass
+
     def __matmul__(self, other):
         return self.tensor_product(other)
 
