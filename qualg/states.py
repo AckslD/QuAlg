@@ -153,6 +153,8 @@ class State:
         return hash(self._key())
 
     def __add__(self, other):
+        if other == 0:
+            return self  # make a copy?
         if not isinstance(other, self.__class__):
             raise NotImplementedError(f"addition is not implemented for {type(other)}")
         # Check that the states are compatible
@@ -191,6 +193,18 @@ class State:
         return new_state
 
     def __rmul__(self, other):
+        return self * other
+
+    def __div__(self, other):
+        if not is_scalar(other):
+            return NotImplemented
+        new_state = State([])
+        for base_state, scalar in self._terms.items():
+            new_state._terms[base_state] = scalar / other
+
+        return new_state
+
+    def __rdiv__(self, other):
         return self * other
 
     def __str__(self):

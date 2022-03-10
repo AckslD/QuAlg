@@ -10,8 +10,19 @@ from copy import copy
 from collections import defaultdict
 from itertools import product
 
-from qualg.toolbox import assert_list_or_tuple, assert_str, expand, simplify, is_zero, replace_var, is_one,\
-    get_variables, has_variable
+from sympy.core.expr import Expr
+
+from qualg.toolbox import (
+    assert_list_or_tuple,
+    assert_str,
+    expand,
+    simplify,
+    is_zero,
+    replace_var,
+    is_one,
+    get_variables,
+    has_variable,
+)
 
 
 def is_number(n):
@@ -21,7 +32,7 @@ def is_number(n):
 
 def is_scalar(n):
     """Check if something is considered a scalar (number of :class:`~.Scalar`)"""
-    return is_number(n) or isinstance(n, Scalar)
+    return is_number(n) or isinstance(n, Scalar) or isinstance(n, Expr)
 
 
 class Scalar(abc.ABC):

@@ -220,6 +220,8 @@ class Operator:
         return new_op
 
     def __add__(self, other):
+        if other == 0:
+            return self  # make a copy?
         if not self._add_compatible(other):
             raise ValueError(f"operator not addition compatible with {other}")
         # Do add
