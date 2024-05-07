@@ -63,7 +63,10 @@ class BaseQuditState(BaseState):
 
     def tensor_product(self, other):
         self._assert_class(other)
-        return self.__class__(self._digits + other._digits)
+        if not self._compatible(other):
+            # TODO should actually be allowed. To enable this, self._base should perhaps be made into an array
+            raise ValueError("Can only do tensor product between states on the same number of qubits")
+        return self.__class__(self._digits + other._digits, base=self._base)
 
     def _vector_index(self):
         """Specifies the index in an actual vector."""
