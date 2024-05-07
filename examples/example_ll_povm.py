@@ -75,11 +75,11 @@ def construct_projector(num_left, num_right):
         # P11
         return outer_product(c1@d2, c1@d2)
     elif (num_left, num_right) == (2, 0):
-        # P20
-        return outer_product(c1@c2, c1@c2)
+        # P20, includes a factor of 1/2 s.t. P20^2=P20
+        return outer_product(c1@c2/2, c1@c2)
     elif (num_left, num_right) == (0, 2):
-        # P02
-        return outer_product(d1@d2, d1@d2)
+        # P02, includes a factor of 1/2 s.t. P02^2=P02
+        return outer_product(d1@d2/2, d1@d2)
     else:
         raise NotImplementedError()
 
